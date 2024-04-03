@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:ktalk/common/models/light_theme_color.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/firebase_options.dart';
 
@@ -16,9 +17,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeData = ThemeData.light();
+    final customTheme = LightThemeColor();
+
     print('sdfrsdfsd');
     logger.d('tesfedfsdfsd');
-    return const MaterialApp(
+    return MaterialApp(
+      theme: themeData.copyWith(
+        scaffoldBackgroundColor: customTheme.background1Color,
+      ),
       home: Scaffold(
         body: Center(
           child: Text('메인 화면'),
