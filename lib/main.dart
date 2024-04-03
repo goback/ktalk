@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ktalk/common/enum/theme_mode_enum.dart';
 import 'package:ktalk/common/models/light_theme_color.dart';
+import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/firebase_options.dart';
 
@@ -9,7 +12,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(const ProviderScope(
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -26,7 +31,7 @@ class MyApp extends StatelessWidget {
       theme: themeData.copyWith(
         scaffoldBackgroundColor: customTheme.background1Color,
       ),
-      home: Scaffold(
+      home: const Scaffold(
         body: Center(
           child: Text('메인 화면'),
         ),
