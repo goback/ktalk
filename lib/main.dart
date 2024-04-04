@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ktalk/auth/screens/phone_number_input_screen.dart';
 import 'package:ktalk/common/enum/theme_mode_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/firebase_options.dart';
@@ -59,9 +60,7 @@ class MyApp extends ConsumerWidget {
         ),
       ),
       home: const Scaffold(
-        body: Center(
-          child: Text('메인 화면'),
-        ),
+        body: PhoneNumberInputScreen(),
       ),
     );
   }
