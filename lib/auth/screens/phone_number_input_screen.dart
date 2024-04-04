@@ -4,6 +4,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ktalk/common/widgets/custom_button_widget.dart';
 
 class PhoneNumberInputScreen extends ConsumerStatefulWidget {
   const PhoneNumberInputScreen({super.key});
@@ -17,6 +18,8 @@ class _PhoneNumberInputScreenState
     extends ConsumerState<PhoneNumberInputScreen> {
   final countryController = TextEditingController();
   final phoneCodeController = TextEditingController();
+  final phoneNumberController = TextEditingController();
+  final globalKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -31,80 +34,108 @@ class _PhoneNumberInputScreenState
   void dispose() {
     countryController.dispose();
     phoneCodeController.dispose();
+    phoneNumberController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('전화번호를 입력해주세요'),
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            const Text(
-              'K톡에서 당신의 계정을 인증합니다.',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 250,
-              child: TextFormField(
-                controller: countryController,
-                readOnly: true,
-                textAlign: TextAlign.center,
-                decoration: const InputDecoration(
-                  suffixIcon: Icon(Icons.arrow_drop_down),
-                ),
-                onTap: () => showCountryPicker(
-                  context: context,
-                  showPhoneCode: true,
-                  onSelect: (Country country) {
-                    countryController.text = country.name;
-                    phoneCodeController.text = country.phoneCode;
-                  },
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('전화번호를 입력해주세요'),
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              const Text(
+                'K톡에서 당신의 계정을 인증합니다.',
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 250,
+                child: TextFormField(
+                  controller: countryController,
+                  readOnly: true,
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(
+                    suffixIcon: Icon(Icons.arrow_drop_down),
+                  ),
+                  onTap: () => showCountryPicker(
+                    context: context,
+                    showPhoneCode: true,
+                    onSelect: (Country country) {
+                      countryController.text = country.name;
+                      phoneCodeController.text = country.phoneCode;
+                    },
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 250,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: TextFormField(
-                      controller: phoneCodeController,
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        isDense: true,
-                        prefixIconConstraints: BoxConstraints(
-                          minWidth: 0,
-                          minHeight: 0,
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 250,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: TextFormField(
+                        controller: phoneCodeController,
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          prefixIconConstraints: BoxConstraints(
+                            minWidth: 0,
+                            minHeight: 0,
+                          ),
+                          prefixIcon: Text('+'),
                         ),
-                        prefixIcon: Text('+'),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    flex: 2,
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        isDense: true,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 2,
+                      child: Form(
+                        key: globalKey,
+                        child: TextFormField(
+                          controller: phoneNumberController,
+                          decoration: const InputDecoration(
+                            isDense: true,
+                          ),
+                          keyboardType: TextInputType.phone,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return '전화번호를 입력해주세요';
+                            }
+                            return null;
+                          },
+                        ),
                       ),
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: CustomButtonWidget(
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    final form = globalKey.currentState;
+                    if (form == null || !form.validate()) {
+                      return;
+                    }
+                  },
+                  text: '다음',
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
