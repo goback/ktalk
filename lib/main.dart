@@ -5,6 +5,7 @@ import 'package:ktalk/auth/screens/phone_number_input_screen.dart';
 import 'package:ktalk/common/enum/theme_mode_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/firebase_options.dart';
+import 'package:ktalk/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +28,7 @@ class MyApp extends ConsumerWidget {
         : ThemeData.light();
 
     return MaterialApp(
+      onGenerateRoute: (settings) => generateRoute(settings),
       theme: themeData.copyWith(
         scaffoldBackgroundColor: customTheme.themeColor.background1Color,
         appBarTheme: AppBarTheme(

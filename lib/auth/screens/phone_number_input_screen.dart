@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
-import 'package:ktalk/common/utils/logger.dart';
+import 'package:ktalk/auth/screens/otp_screen.dart';
 import 'package:ktalk/common/widgets/custom_button_widget.dart';
 
 class PhoneNumberInputScreen extends ConsumerStatefulWidget {
@@ -142,6 +142,7 @@ class _PhoneNumberInputScreenState
                       return;
                     }
                     sendOTP();
+                    Navigator.pushNamed(context, OTPScreen.routeName);
                   },
                   text: '다음',
                 ),
