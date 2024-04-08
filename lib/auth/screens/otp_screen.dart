@@ -42,6 +42,7 @@ class OTPScreen extends ConsumerWidget {
                     await ref
                         .read(authProvider.notifier)
                         .verifyOTP(userOTP: value);
+                    Navigator.popUntil(context, (route) => route.isFirst);
                   },
                 ),
               ),
