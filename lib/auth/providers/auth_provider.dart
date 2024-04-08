@@ -20,4 +20,10 @@ class AuthNotifier extends Notifier<AuthState> {
   }) async {
     await authRepository.sendOTP(phoneNumber: phoneNumber);
   }
+
+  Future<void> verifyOTP({
+    required String userOTP,
+  }) async {
+    await authRepository.verifyOTP(userOTP: userOTP);
+  }
 }

@@ -30,4 +30,15 @@ class AuthRepository {
       codeAutoRetrievalTimeout: (_) {},
     );
   }
+
+  Future<void> verifyOTP({
+    required String userOTP,
+  }) async {
+    final credential = PhoneAuthProvider.credential(
+      verificationId: _verificationId!,
+      smsCode: userOTP,
+    );
+
+    await auth.signInWithCredential(credential);
+  }
 }
