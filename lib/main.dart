@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/auth/screens/phone_number_input_screen.dart';
+import 'package:ktalk/auth/screens/user_information_screen.dart';
 import 'package:ktalk/common/enum/theme_mode_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/utils/logger.dart';
@@ -85,12 +86,7 @@ class Main extends ConsumerWidget {
             return const PhoneNumberInputScreen();
           }
 
-          return Center(
-            child: ElevatedButton(
-              onPressed: () => FirebaseAuth.instance.signOut(),
-              child: Text('로그아웃 버튼'),
-            ),
-          );
+          return const UserInformationScreen();
         },
         error: (error, stackTrace) {
           logger.d(error);
