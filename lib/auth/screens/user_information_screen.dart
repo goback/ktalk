@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/common/widgets/custom_button_widget.dart';
 
 class UserInformationScreen extends ConsumerStatefulWidget {
@@ -15,7 +16,14 @@ class UserInformationScreen extends ConsumerStatefulWidget {
 
 class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
   final globalKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
   File? image;
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
+  }
 
   Widget _profileWidget() {
     return image == null
@@ -68,6 +76,14 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
     }
   }
 
+  Future<void> _saveUserData() async {
+    final name = nameController.text.trim();
+    await ref.watch(authProvider.notifier).saveUserData(
+          name: name,
+          profileImage: image,
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,6 +105,7 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                 child: Form(
                   key: globalKey,
                   child: TextFormField(
+                    controller: nameController,
                     decoration: const InputDecoration(
                       hintText: '이름을 입력해주세요',
                     ),
@@ -109,13 +126,15 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
             padding: const EdgeInsets.all(20),
             child: CustomButtonWidget(
               text: '다음',
-              onPressed: () {
+              onPressed: () async {
                 FocusScope.of(context).unfocus();
                 final form = globalKey.currentState;
 
                 if (form == null || !form.validate()) {
                   return;
                 }
+
+                await _saveUserData();
               },
             ),
           ),

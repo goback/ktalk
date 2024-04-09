@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/providers/auth_state.dart';
@@ -30,5 +32,15 @@ class AuthNotifier extends Notifier<AuthState> {
     required String userOTP,
   }) async {
     await authRepository.verifyOTP(userOTP: userOTP);
+  }
+
+  Future<void> saveUserData({
+    required String name,
+    required File? profileImage,
+  }) async {
+    await authRepository.saveUserData(
+      name: name,
+      profileImage: profileImage,
+    );
   }
 }
