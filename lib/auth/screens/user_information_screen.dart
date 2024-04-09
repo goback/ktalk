@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ktalk/common/widgets/custom_button_widget.dart';
 
 class UserInformationScreen extends ConsumerStatefulWidget {
   const UserInformationScreen({super.key});
@@ -13,6 +14,7 @@ class UserInformationScreen extends ConsumerStatefulWidget {
 }
 
 class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
+  final globalKey = GlobalKey<FormState>();
   File? image;
 
   Widget _profileWidget() {
@@ -78,6 +80,45 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
           const Text('이름과 프로필 사진을 입력해 주세요'),
           const SizedBox(height: 30),
           _profileWidget(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                width: 300,
+                child: Form(
+                  key: globalKey,
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: '이름을 입력해주세요',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return '이름을 입력해주세요';
+                      }
+                      return null;
+                    },
+                    onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: CustomButtonWidget(
+              text: '다음',
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                final form = globalKey.currentState;
+
+                if (form == null || !form.validate()) {
+                  return;
+                }
+              },
+            ),
+          ),
         ],
       ),
     );
