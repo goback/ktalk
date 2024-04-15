@@ -38,9 +38,13 @@ class AuthNotifier extends Notifier<AuthState> {
     required String name,
     required File? profileImage,
   }) async {
-    await authRepository.saveUserData(
+    final userModel = await authRepository.saveUserData(
       name: name,
       profileImage: profileImage,
+    );
+
+    state = state.copyWith(
+      userModel: userModel,
     );
   }
 }

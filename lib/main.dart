@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -86,7 +85,13 @@ class Main extends ConsumerWidget {
             return const PhoneNumberInputScreen();
           }
 
-          return const UserInformationScreen();
+          if (user.displayName == null || user.displayName!.isEmpty) {
+            return const UserInformationScreen();
+          }
+
+          return const Center(
+            child: Text('메인화면'),
+          );
         },
         error: (error, stackTrace) {
           logger.d(error);

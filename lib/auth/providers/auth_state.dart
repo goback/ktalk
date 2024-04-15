@@ -12,4 +12,12 @@ class AuthState {
       userModel: UserModel.init(),
     );
   }
+
+  AuthState copyWith({
+    UserModel? userModel,
+  }) {
+    return AuthState(
+      userModel: userModel ?? this.userModel,
+    );
+  }
 }

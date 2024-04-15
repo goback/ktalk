@@ -82,6 +82,8 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
           name: name,
           profileImage: image,
         );
+
+    ref.invalidate(authStateProvider);
   }
 
   @override

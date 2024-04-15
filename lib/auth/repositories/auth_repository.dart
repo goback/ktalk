@@ -56,7 +56,7 @@ class AuthRepository {
     await auth.signInWithCredential(credential);
   }
 
-  saveUserData({
+  Future<UserModel> saveUserData({
     required String name,
     required File? profileImage,
   }) async {
@@ -87,5 +87,9 @@ class AuthRepository {
         .doc(auth.currentUser!.phoneNumber!);
     await currentUserDocRef.set(userModel.toMap());
     await currentPhoneNumbersDocRef.set({'uid': uid});
+
+    await auth.currentUser!.updateDisplayName(name);
+
+    return userModel;
   }
 }
