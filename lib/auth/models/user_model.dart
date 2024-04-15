@@ -19,4 +19,22 @@ class UserModel {
       phoneNumber: '',
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'displayName': this.displayName,
+      'uid': this.uid,
+      'photoURL': this.photoURL,
+      'phoneNumber': this.phoneNumber,
+    };
+  }
+
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      displayName: map['displayName'] as String,
+      uid: map['uid'] as String,
+      photoURL: map['photoURL'] as String,
+      phoneNumber: map['phoneNumber'] as String,
+    );
+  }
 }
