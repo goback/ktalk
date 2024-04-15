@@ -31,65 +31,77 @@ class AuthRepository {
   Future<void> sendOTP({
     required String phoneNumber,
   }) async {
-    await auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      codeSent: (verificationId, _) {
-        _verificationId = verificationId;
-      },
-      verificationCompleted: (_) {},
-      verificationFailed: (error) {
-        logger.d(error.message);
-        logger.d(error.stackTrace);
-      },
-      codeAutoRetrievalTimeout: (_) {},
-    );
+    try {
+      await auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        codeSent: (verificationId, _) {
+          _verificationId = verificationId;
+        },
+        verificationCompleted: (_) {},
+        verificationFailed: (error) {
+          logger.d(error.message);
+          logger.d(error.stackTrace);
+        },
+        codeAutoRetrievalTimeout: (_) {},
+      );
+    } catch (_) {
+      rethrow;
+    }
   }
 
   Future<void> verifyOTP({
     required String userOTP,
   }) async {
-    final credential = PhoneAuthProvider.credential(
-      verificationId: _verificationId!,
-      smsCode: userOTP,
-    );
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId!,
+        smsCode: userOTP,
+      );
 
-    await auth.signInWithCredential(credential);
+      await auth.signInWithCredential(credential);
+    } catch (_) {
+      rethrow;
+    }
   }
 
   Future<UserModel> saveUserData({
     required String name,
     required File? profileImage,
   }) async {
-    final uid = auth.currentUser!.uid;
+    try {
+      final uid = auth.currentUser!.uid;
 
-    String? photoUrl;
+      String? photoUrl;
 
-    if (profileImage != null) {
-      final mimeType = lookupMimeType(profileImage.path);
-      final metadata = SettableMetadata(contentType: mimeType);
-      final snapshot = await firebaseStorage
-          .ref()
-          .child('profile')
-          .child(uid)
-          .putFile(profileImage, metadata);
-      photoUrl = await snapshot.ref.getDownloadURL();
+      if (profileImage != null) {
+        final mimeType = lookupMimeType(profileImage.path);
+        final metadata = SettableMetadata(contentType: mimeType);
+        final snapshot = await firebaseStorage
+            .ref()
+            .child('profile')
+            .child(uid)
+            .putFile(profileImage, metadata);
+        photoUrl = await snapshot.ref.getDownloadURL();
+      }
+
+      final userModel = UserModel(
+        displayName: name,
+        uid: uid,
+        photoURL: photoUrl,
+        phoneNumber: auth.currentUser!.phoneNumber!,
+      );
+      final currentUserDocRef = firestore.collection('users').doc(uid);
+      final currentPhoneNumbersDocRef = firestore
+          .collection('phoneNumbers')
+          .doc(auth.currentUser!.phoneNumber!);
+      await currentUserDocRef.set(userModel.toMap());
+      await currentPhoneNumbersDocRef.set({'uid': uid});
+
+      await auth.currentUser!.updateDisplayName(name);
+
+      return userModel;
+    } catch (_) {
+      rethrow;
     }
-
-    final userModel = UserModel(
-      displayName: name,
-      uid: uid,
-      photoURL: photoUrl,
-      phoneNumber: auth.currentUser!.phoneNumber!,
-    );
-    final currentUserDocRef = firestore.collection('users').doc(uid);
-    final currentPhoneNumbersDocRef = firestore
-        .collection('phoneNumbers')
-        .doc(auth.currentUser!.phoneNumber!);
-    await currentUserDocRef.set(userModel.toMap());
-    await currentPhoneNumbersDocRef.set({'uid': uid});
-
-    await auth.currentUser!.updateDisplayName(name);
-
-    return userModel;
   }
 }

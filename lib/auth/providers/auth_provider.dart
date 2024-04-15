@@ -25,26 +25,38 @@ class AuthNotifier extends Notifier<AuthState> {
   Future<void> sendOTP({
     required String phoneNumber,
   }) async {
-    await authRepository.sendOTP(phoneNumber: phoneNumber);
+    try {
+      await authRepository.sendOTP(phoneNumber: phoneNumber);
+    } catch (_) {
+      rethrow;
+    }
   }
 
   Future<void> verifyOTP({
     required String userOTP,
   }) async {
-    await authRepository.verifyOTP(userOTP: userOTP);
+    try {
+      await authRepository.verifyOTP(userOTP: userOTP);
+    } catch (_) {
+      rethrow;
+    }
   }
 
   Future<void> saveUserData({
     required String name,
     required File? profileImage,
   }) async {
-    final userModel = await authRepository.saveUserData(
-      name: name,
-      profileImage: profileImage,
-    );
+    try {
+      final userModel = await authRepository.saveUserData(
+        name: name,
+        profileImage: profileImage,
+      );
 
-    state = state.copyWith(
-      userModel: userModel,
-    );
+      state = state.copyWith(
+        userModel: userModel,
+      );
+    } catch (_) {
+      rethrow;
+    }
   }
 }

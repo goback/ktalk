@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
+import 'package:ktalk/common/utils/global_navigator.dart';
+import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/common/widgets/custom_button_widget.dart';
 
 class UserInformationScreen extends ConsumerStatefulWidget {
@@ -136,7 +138,12 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                   return;
                 }
 
-                await _saveUserData();
+                try {
+                  await _saveUserData();
+                } catch (e, stackTrace) {
+                  GlobalNavigator.showAlertDialog(text: e.toString());
+                  logger.d(stackTrace);
+                }
               },
             ),
           ),

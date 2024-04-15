@@ -10,6 +10,8 @@ import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/firebase_options.dart';
 import 'package:ktalk/router.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -31,6 +33,7 @@ class MyApp extends ConsumerWidget {
         : ThemeData.light();
 
     return MaterialApp(
+      navigatorKey: navigatorKey,
       onGenerateRoute: (settings) => generateRoute(settings),
       theme: themeData.copyWith(
         scaffoldBackgroundColor: customTheme.themeColor.background1Color,

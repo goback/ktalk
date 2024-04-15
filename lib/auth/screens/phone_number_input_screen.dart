@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/auth/screens/otp_screen.dart';
+import 'package:ktalk/common/utils/global_navigator.dart';
+import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/common/widgets/custom_button_widget.dart';
 
 class PhoneNumberInputScreen extends ConsumerStatefulWidget {
@@ -135,14 +137,19 @@ class _PhoneNumberInputScreenState
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: CustomButtonWidget(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    final form = globalKey.currentState;
-                    if (form == null || !form.validate()) {
-                      return;
+                  onPressed: () async {
+                    try {
+                      FocusScope.of(context).unfocus();
+                      final form = globalKey.currentState;
+                      if (form == null || !form.validate()) {
+                        return;
+                      }
+                      await sendOTP();
+                      Navigator.pushNamed(context, OTPScreen.routeName);
+                    } catch (e, stackTrace) {
+                      GlobalNavigator.showAlertDialog(text: e.toString());
+                      logger.d(stackTrace);
                     }
-                    sendOTP();
-                    Navigator.pushNamed(context, OTPScreen.routeName);
                   },
                   text: '다음',
                 ),
