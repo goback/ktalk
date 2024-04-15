@@ -68,10 +68,10 @@ class AuthRepository {
     required String name,
     required File? profileImage,
   }) async {
+    String? photoUrl;
     try {
+      WriteBatch batch = firestore.batch();
       final uid = auth.currentUser!.uid;
-
-      String? photoUrl;
 
       if (profileImage != null) {
         final mimeType = lookupMimeType(profileImage.path);
@@ -94,13 +94,20 @@ class AuthRepository {
       final currentPhoneNumbersDocRef = firestore
           .collection('phoneNumbers')
           .doc(auth.currentUser!.phoneNumber!);
-      await currentUserDocRef.set(userModel.toMap());
-      await currentPhoneNumbersDocRef.set({'uid': uid});
+
+      batch.set(currentUserDocRef, userModel.toMap());
+      batch.set(currentPhoneNumbersDocRef, {'uid': uid});
+      // await currentUserDocRef.set(userModel.toMap());
+      // await currentPhoneNumbersDocRef.set({'uid': uid});
+      await batch.commit();
 
       await auth.currentUser!.updateDisplayName(name);
 
       return userModel;
     } catch (_) {
+      if (photoUrl != null) {
+        await firebaseStorage.refFromURL(photoUrl).delete();
+      }
       rethrow;
     }
   }
