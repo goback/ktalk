@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/auth/screens/phone_number_input_screen.dart';
@@ -7,8 +8,10 @@ import 'package:ktalk/auth/screens/user_information_screen.dart';
 import 'package:ktalk/common/enum/theme_mode_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/providers/loader_provider.dart';
+import 'package:ktalk/common/providers/locale_provider.dart';
 import 'package:ktalk/common/screens/main_layout_screen.dart';
 import 'package:ktalk/common/utils/global_navigator.dart';
+import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/firebase_options.dart';
 import 'package:ktalk/router.dart';
@@ -35,6 +38,7 @@ class MyApp extends ConsumerWidget {
     final themeData = customTheme.themeModeEnum == ThemeModeEnum.dark
         ? ThemeData.dark()
         : ThemeData.light();
+    final locale = ref.watch(localeProvider);
 
     ref.listen(loaderProvider, (previous, next) {
       next ? context.loaderOverlay.show() : context.loaderOverlay.hide();
@@ -47,6 +51,14 @@ class MyApp extends ConsumerWidget {
         child: CircularProgressIndicator(color: Colors.white),
       ),
       child: MaterialApp(
+        locale: locale,
+        localizationsDelegates: const [
+          S.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: S.delegate.supportedLocales,
         navigatorKey: navigatorKey,
         onGenerateRoute: (settings) => generateRoute(settings),
         theme: themeData.copyWith(

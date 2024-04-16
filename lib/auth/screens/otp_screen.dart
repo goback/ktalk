@@ -3,6 +3,7 @@ import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/common/utils/global_navigator.dart';
+import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/utils/logger.dart';
 
 class OTPScreen extends ConsumerWidget {
@@ -16,12 +17,12 @@ class OTPScreen extends ConsumerWidget {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('전화번호 인증 중'),
+          title: Text(S.current.optScreenText1),
         ),
         body: Center(
           child: Column(
             children: [
-              const Text('인증 번호를 전송했습니다'),
+              Text(S.current.optScreenText2),
               Container(
                 width: 240,
                 decoration: const BoxDecoration(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ktalk/common/providers/locale_provider.dart';
+import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 
 class MainLayoutScreen extends ConsumerStatefulWidget {
   const MainLayoutScreen({super.key});
@@ -11,29 +13,83 @@ class MainLayoutScreen extends ConsumerStatefulWidget {
 class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(localeProvider);
+
     return DefaultTabController(
       animationDuration: Duration.zero,
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('K톡'),
-          bottom: const TabBar(
+          title: Text(S.current.mainLayoutScreenText1),
+          bottom: TabBar(
             tabs: [
               Tab(
-                icon: Icon(Icons.person, size: 30),
-                iconMargin: EdgeInsets.only(bottom: 1),
-                text: '친구',
+                icon: const Icon(Icons.person, size: 30),
+                iconMargin: const EdgeInsets.only(bottom: 1),
+                text: S.current.mainLayoutScreenText2,
               ),
               Tab(
-                icon: Icon(Icons.chat_bubble_rounded, size: 30),
-                iconMargin: EdgeInsets.only(bottom: 1),
-                text: '채팅',
+                icon: const Icon(Icons.chat_bubble_rounded, size: 30),
+                iconMargin: const EdgeInsets.only(bottom: 1),
+                text: S.current.mainLayoutScreenText3,
               ),
               Tab(
-                icon: Icon(Icons.wechat_outlined, size: 30),
-                iconMargin: EdgeInsets.only(bottom: 1),
-                text: '그룹',
+                icon: const Icon(Icons.wechat_outlined, size: 30),
+                iconMargin: const EdgeInsets.only(bottom: 1),
+                text: S.current.mainLayoutScreenText4,
               )
+            ],
+          ),
+        ),
+        endDrawer: Drawer(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 100,
+                child: DrawerHeader(
+                  child: Text(
+                    S.current.mainLayoutScreenText5,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const ListTile(
+                leading: Icon(Icons.language),
+                title: Text('언어'),
+              ),
+              RadioListTile(
+                title: const Text('한국어'),
+                value: const Locale('ko'),
+                groupValue: locale,
+                onChanged: (value) {
+                  ref
+                      .read(localeProvider.notifier)
+                      .changeLocale(locale: value!);
+                },
+              ),
+              RadioListTile(
+                title: const Text('English'),
+                value: const Locale('en'),
+                groupValue: locale,
+                onChanged: (value) {
+                  ref
+                      .read(localeProvider.notifier)
+                      .changeLocale(locale: value!);
+                },
+              ),
+              RadioListTile(
+                title: const Text('日本語'),
+                value: const Locale('ja'),
+                groupValue: locale,
+                onChanged: (value) {
+                  ref
+                      .read(localeProvider.notifier)
+                      .changeLocale(locale: value!);
+                },
+              ),
             ],
           ),
         ),

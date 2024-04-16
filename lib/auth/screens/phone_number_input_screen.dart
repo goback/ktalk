@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/auth/screens/otp_screen.dart';
 import 'package:ktalk/common/utils/global_navigator.dart';
+import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/common/widgets/custom_button_widget.dart';
 
@@ -57,14 +58,14 @@ class _PhoneNumberInputScreenState
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('전화번호를 입력해주세요'),
+          title: Text(S.current.loginScreenText1),
         ),
         body: Center(
           child: Column(
             children: [
-              const Text(
-                'K톡에서 당신의 계정을 인증합니다.',
-                style: TextStyle(color: Colors.grey),
+              Text(
+                S.current.loginScreenText2,
+                style: const TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 10),
               SizedBox(
@@ -123,7 +124,7 @@ class _PhoneNumberInputScreenState
                           ],
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return '전화번호를 입력해주세요';
+                              return S.current.loginScreenText1;
                             }
                             return null;
                           },
@@ -151,7 +152,7 @@ class _PhoneNumberInputScreenState
                       logger.d(stackTrace);
                     }
                   },
-                  text: '다음',
+                  text: S.current.next,
                 ),
               )
             ],
