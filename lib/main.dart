@@ -7,6 +7,7 @@ import 'package:ktalk/auth/screens/user_information_screen.dart';
 import 'package:ktalk/common/enum/theme_mode_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/providers/loader_provider.dart';
+import 'package:ktalk/common/screens/main_layout_screen.dart';
 import 'package:ktalk/common/utils/global_navigator.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/firebase_options.dart';
@@ -107,9 +108,7 @@ class Main extends ConsumerWidget {
             return const UserInformationScreen();
           }
 
-          return const Center(
-            child: Text('메인화면'),
-          );
+          return const MainLayoutScreen();
         },
         error: (error, stackTrace) {
           context.loaderOverlay.hide();
