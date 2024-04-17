@@ -31,10 +31,15 @@ class UserModel {
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      displayName: map['displayName'] as String,
-      uid: map['uid'] as String,
-      photoURL: map['photoURL'] as String,
-      phoneNumber: map['phoneNumber'] as String,
+      displayName: map['displayName'],
+      uid: map['uid'],
+      photoURL: map['photoURL'],
+      phoneNumber: map['phoneNumber'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'UserModel{displayName: $displayName, uid: $uid, photoURL: $photoURL, phoneNumber: $phoneNumber}';
   }
 }

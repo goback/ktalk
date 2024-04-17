@@ -50,6 +50,7 @@ dependencies:
   flutter_localization: ^0.2.0
   permission_handler: ^11.3.1
   flutter_contacts: ^1.1.7+1
+  extended_image: ^8.2.0
 
 dev_dependencies:
   flutter_test:
