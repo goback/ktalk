@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/common/enum/theme_mode_enum.dart';
@@ -58,6 +59,11 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                     ),
                   ),
                 ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: Text(S.current.mainLayoutScreenText6),
+                onTap: () => FirebaseAuth.instance.signOut(),
               ),
               SwitchListTile(
                 secondary: const Icon(Icons.brightness_6),
