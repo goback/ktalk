@@ -5,6 +5,7 @@ import 'package:ktalk/common/enum/theme_mode_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/providers/locale_provider.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
+import 'package:ktalk/firend/screens/friend_list_screen.dart';
 
 class MainLayoutScreen extends ConsumerStatefulWidget {
   const MainLayoutScreen({super.key});
@@ -114,9 +115,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
         body: const TabBarView(
           physics: NeverScrollableScrollPhysics(),
           children: [
-            Center(
-              child: Text('1번'),
-            ),
+            FriendListScreen(),
             Center(
               child: Text('2번'),
             ),
