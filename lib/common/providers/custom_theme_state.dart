@@ -26,4 +26,14 @@ class CustomThemeState {
           : ThemeModeEnum.light,
     );
   }
+
+  CustomThemeState copyWith({
+    ThemeColor? themeColor,
+    ThemeModeEnum? themeModeEnum,
+  }) {
+    return CustomThemeState(
+      themeColor: themeColor ?? this.themeColor,
+      themeModeEnum: themeModeEnum ?? this.themeModeEnum,
+    );
+  }
 }

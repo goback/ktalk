@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ktalk/common/enum/theme_mode_enum.dart';
+import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/providers/locale_provider.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 
@@ -14,6 +16,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   @override
   Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider);
+    final themeModeEnum = ref.watch(customThemeProvider).themeModeEnum;
 
     return DefaultTabController(
       animationDuration: Duration.zero,
@@ -55,6 +58,15 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                     ),
                   ),
                 ),
+              ),
+              SwitchListTile(
+                secondary: const Icon(Icons.brightness_6),
+                title: Text(S.current.mainLayoutScreenText7),
+                activeColor: Colors.grey,
+                value: themeModeEnum == ThemeModeEnum.light,
+                onChanged: (value) {
+                  ref.read(customThemeProvider.notifier).toggleThemeMode();
+                },
               ),
               const ListTile(
                 leading: Icon(Icons.language),
