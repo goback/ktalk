@@ -24,29 +24,48 @@ class ChatRepository {
   Future<ChatModel> enterChatFromFriendList({
     required Contact selectedContact,
   }) async {
-    final phoneNumber = selectedContact.phones.first.normalizedNumber;
-    final userId = await firestore
-        .collection('phoneNumbers')
-        .doc(phoneNumber)
-        .get()
-        .then((value) => value.data()!['uid']);
+    try {
+      final phoneNumber = selectedContact.phones.first.normalizedNumber;
+      final userId = await firestore
+          .collection('phoneNumbers')
+          .doc(phoneNumber)
+          .get()
+          .then((value) => value.data()!['uid']);
 
-    final currentUserId = auth.currentUser!.uid;
+      final currentUserId = auth.currentUser!.uid;
 
-    final userModelList = [
-      await firestore
+      final userModelList = [
+        await firestore
+            .collection('users')
+            .doc(currentUserId)
+            .get()
+            .then((value) => UserModel.fromMap(value.data()!)),
+        await firestore
+            .collection('users')
+            .doc(userId)
+            .get()
+            .then((value) => UserModel.fromMap(value.data()!)),
+      ];
+
+      final querySnapshot = await firestore
           .collection('users')
           .doc(currentUserId)
-          .get()
-          .then((value) => UserModel.fromMap(value.data()!)),
-      await firestore
-          .collection('users')
-          .doc(userId)
-          .get()
-          .then((value) => UserModel.fromMap(value.data()!)),
-    ];
+          .collection('chats')
+          .where('userList', arrayContains: userId)
+          .limit(1)
+          .get();
 
-    return await _createChat(userModelList: userModelList);
+      if (querySnapshot.docs.isEmpty) {
+        return await _createChat(userModelList: userModelList);
+      }
+
+      return ChatModel.fromMap(
+        map: querySnapshot.docs.first.data(),
+        userList: userModelList,
+      );
+    } catch (_) {
+      rethrow;
+    }
   }
 
   Future<ChatModel> _createChat({

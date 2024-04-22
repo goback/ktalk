@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ktalk/auth/models/user_model.dart';
 import 'package:ktalk/common/models/base_model.dart';
 
 class ChatModel extends BaseModel {
@@ -24,5 +25,17 @@ class ChatModel extends BaseModel {
       'userList': userList.map<String>((e) => e.uid).toList(),
       'createAt': createAt,
     };
+  }
+
+  factory ChatModel.fromMap({
+    required Map<String, dynamic> map,
+    required List<UserModel> userList,
+  }) {
+    return ChatModel(
+      id: map['id'],
+      lastMessage: map['lastMessage'],
+      userList: userList,
+      createAt: map['createAt'],
+    );
   }
 }
