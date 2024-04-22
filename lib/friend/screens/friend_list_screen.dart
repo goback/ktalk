@@ -2,6 +2,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
+import 'package:ktalk/chat/screens/chat_screen.dart';
 import 'package:ktalk/common/utils/global_navigator.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/friend/providers/friend_provider.dart';
@@ -24,9 +25,22 @@ class FriendListScreen extends ConsumerWidget {
               final contact = data[index];
               return ListTile(
                 onTap: () async {
-                  await ref.read(chatProvider.notifier).enterChatFromFriendList(
-                        selectedContact: contact,
-                      );
+                  try {
+                    await ref
+                        .read(chatProvider.notifier)
+                        .enterChatFromFriendList(
+                          selectedContact: contact,
+                        );
+
+                    Navigator.pushNamed(
+                      context,
+                      ChatScreen.routeName,
+                    );
+                  } catch (e, stackTrace) {
+                    logger.e(e);
+                    logger.e(stackTrace);
+                    GlobalNavigator.showAlertDialog(text: e.toString());
+                  }
                 },
                 title: Text(contact.displayName),
                 leading: CircleAvatar(
