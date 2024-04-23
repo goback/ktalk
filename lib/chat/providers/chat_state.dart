@@ -14,7 +14,7 @@ class ChatState extends BaseState {
 
   ChatState copyWith({
     ChatModel? model,
-}) {
+  }) {
     return ChatState(
       model: model ?? this.model,
     );

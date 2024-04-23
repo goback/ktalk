@@ -38,4 +38,18 @@ class ChatModel extends BaseModel {
       createAt: map['createAt'],
     );
   }
+
+  ChatModel copyWith({
+    String? id,
+    String? lastMessage,
+    List<UserModel>? userList,
+    Timestamp? createAt,
+  }) {
+    return ChatModel(
+      id: id ?? this.id,
+      lastMessage: lastMessage ?? this.lastMessage,
+      userList: userList ?? this.userList,
+      createAt: createAt ?? this.createAt,
+    );
+  }
 }

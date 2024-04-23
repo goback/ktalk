@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/common/enum/theme_mode_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/providers/locale_provider.dart';
@@ -15,6 +16,16 @@ class MainLayoutScreen extends ConsumerStatefulWidget {
 }
 
 class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentUserData();
+  }
+
+  Future<void> _getCurrentUserData() async {
+    await ref.read(authProvider.notifier).getCurrentUserData();
+  }
+
   @override
   Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider);

@@ -4,6 +4,8 @@ import 'package:flutter_contacts/contact.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/models/user_model.dart';
 import 'package:ktalk/chat/models/chat_model.dart';
+import 'package:ktalk/chat/models/message_model.dart';
+import 'package:ktalk/common/enum/message_enum.dart';
 
 final chatRepositoryProvider = Provider<ChatRepository>(
   (ref) => ChatRepository(
@@ -93,6 +95,53 @@ class ChatRepository {
         }
       });
       return chatModel;
+    } catch (_) {
+      rethrow;
+    }
+  }
+
+  Future<void> sendMessage({
+    String? text,
+    required ChatModel chatModel,
+    required UserModel currentUserModel,
+    required MessageEnum messageType,
+  }) async {
+    try {
+      chatModel = chatModel.copyWith(
+        createAt: Timestamp.now(),
+        lastMessage: text,
+      );
+
+      final messageDocRef = firestore
+          .collection('chats')
+          .doc(chatModel.id)
+          .collection('messages')
+          .doc();
+
+      final messageModel = MessageModel(
+        userId: currentUserModel.uid,
+        text: text!,
+        type: messageType,
+        createdAt: Timestamp.now(),
+        messageId: messageDocRef.id,
+        userModel: UserModel.init(),
+      );
+
+      await firestore.runTransaction((transaction) async {
+        transaction.set(
+          messageDocRef,
+          messageModel.toMap(),
+        );
+
+        for (final userModel in chatModel.userList) {
+          await firestore
+              .collection('users')
+              .doc(userModel.uid)
+              .collection('chats')
+              .doc(chatModel.id)
+              .set(chatModel.toMap());
+        }
+      });
     } catch (_) {
       rethrow;
     }

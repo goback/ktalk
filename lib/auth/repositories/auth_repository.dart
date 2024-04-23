@@ -111,4 +111,17 @@ class AuthRepository {
       rethrow;
     }
   }
+
+  Future<UserModel> getCurrentUserData() async {
+    try {
+      final userModel = await firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .get()
+          .then((value) => UserModel.fromMap(value.data()!));
+      return userModel;
+    } catch (_) {
+      rethrow;
+    }
+  }
 }
