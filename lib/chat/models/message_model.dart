@@ -29,6 +29,20 @@ class MessageModel {
     };
   }
 
+  factory MessageModel.fromMap(
+    Map<String, dynamic> map,
+    UserModel userModel,
+  ) {
+    return MessageModel(
+      userId: map['userId'],
+      text: map['text'],
+      type: (map['type'] as String).toEnum(),
+      createdAt: map['createdAt'],
+      messageId: map['messageId'],
+      userModel: userModel,
+    );
+  }
+
   MessageModel copyWith({
     String? userId,
     String? text,

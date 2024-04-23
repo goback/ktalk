@@ -146,4 +146,27 @@ class ChatRepository {
       rethrow;
     }
   }
+
+  Future<List<MessageModel>> getMessageList({
+    required String chatId,
+  }) async {
+    try {
+      final query = firestore
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .orderBy('createdAt');
+      final snapshot = await query.get();
+      return await Future.wait(snapshot.docs.map((messageDoc) async {
+        final userModel = await firestore
+            .collection('users')
+            .doc(messageDoc.data()['userId'])
+            .get()
+            .then((value) => UserModel.fromMap(value.data()!));
+        return MessageModel.fromMap(messageDoc.data(), userModel);
+      }).toList());
+    } catch (_) {
+      rethrow;
+    }
+  }
 }

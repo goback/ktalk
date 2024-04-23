@@ -59,4 +59,18 @@ class ChatNotifier extends Notifier<ChatState> {
       rethrow;
     }
   }
+
+  Future<void> getMessageList() async {
+    try {
+      final chatModel = state.model as ChatModel;
+      final messageList =
+          await chatRepository.getMessageList(chatId: chatModel.id);
+
+      state = state.copyWith(
+        messageList: messageList,
+      );
+    } catch (_) {
+      rethrow;
+    }
+  }
 }

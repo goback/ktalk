@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/widgets/message_input_field_widget.dart';
+import 'package:ktalk/common/widgets/message_list_widget.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   static const String routeName = '/chat-screen';
@@ -42,9 +43,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: Center(
-              child: Text('채팅 화면'),
-            ),
+            child: MessageListWidget(),
           ),
           MessageInputFieldWidget(),
         ],
