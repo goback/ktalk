@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
+import 'package:ktalk/common/widgets/message_card_widget.dart';
 
 class MessageListWidget extends ConsumerStatefulWidget {
   const MessageListWidget({super.key});
@@ -26,7 +27,7 @@ class _MessageListWidgetState extends ConsumerState<MessageListWidget> {
     return ListView.builder(
       itemCount: messageList.length,
       itemBuilder: (context, index) {
-        return Text(messageList[index].text);
+        return MessageCardWidget(messageModel: messageList[index]);
       },
     );
   }
