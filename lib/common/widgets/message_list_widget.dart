@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
-import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/common/widgets/message_card_widget.dart';
 
 class MessageListWidget extends ConsumerStatefulWidget {
@@ -24,8 +23,14 @@ class _MessageListWidgetState extends ConsumerState<MessageListWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final baseModel = ref.watch(chatProvider).model;
     ref.listen(chatListProvider, (previous, next) {
-      logger.d('참여중인 채팅방이 업데이트됨');
+      final updatedModelList = next.value;
+      final updatedModel = updatedModelList?.first;
+
+      if (updatedModelList != null && updatedModel!.id == baseModel.id) {
+        ref.watch(chatProvider.notifier).getMessageList();
+      }
     });
 
     final messageList = ref.watch(chatProvider).messageList;

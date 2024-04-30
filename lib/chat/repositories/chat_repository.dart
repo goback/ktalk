@@ -177,12 +177,14 @@ class ChatRepository {
         );
 
         for (final userModel in chatModel.userList) {
-          await firestore
-              .collection('users')
-              .doc(userModel.uid)
-              .collection('chats')
-              .doc(chatModel.id)
-              .set(chatModel.toMap());
+          transaction.set(
+            firestore
+                .collection('users')
+                .doc(userModel.uid)
+                .collection('chats')
+                .doc(chatModel.id),
+            chatModel.toMap(),
+          );
         }
       });
     } catch (_) {
