@@ -35,9 +35,11 @@ class _MessageListWidgetState extends ConsumerState<MessageListWidget> {
 
     final messageList = ref.watch(chatProvider).messageList;
     return ListView.builder(
+      reverse: true,
       itemCount: messageList.length,
       itemBuilder: (context, index) {
-        return MessageCardWidget(messageModel: messageList[index]);
+        final reversedMessageList = messageList.reversed.toList();
+        return MessageCardWidget(messageModel: reversedMessageList[index]);
       },
     );
   }

@@ -35,7 +35,7 @@ class FriendListScreen extends ConsumerWidget {
                     Navigator.pushNamed(
                       context,
                       ChatScreen.routeName,
-                    );
+                    ).then((value) => ref.invalidate(chatProvider));
                   } catch (e, stackTrace) {
                     logger.e(e);
                     logger.e(stackTrace);

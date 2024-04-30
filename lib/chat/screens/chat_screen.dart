@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ktalk/auth/models/user_model.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/widgets/message_input_field_widget.dart';
@@ -21,7 +22,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final chatModel = ref.watch(chatProvider).model;
     final themeColor = ref.watch(customThemeProvider).themeColor;
 
-    final userModel = chatModel.userList[1];
+    final userModel = chatModel.userList.length > 1
+        ? chatModel.userList[1]
+        : UserModel.init();
 
     return Scaffold(
       backgroundColor: themeColor.background3Color,
