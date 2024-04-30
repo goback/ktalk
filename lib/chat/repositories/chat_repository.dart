@@ -194,13 +194,25 @@ class ChatRepository {
 
   Future<List<MessageModel>> getMessageList({
     required String chatId,
+    String? lastMessageId,
   }) async {
     try {
-      final query = firestore
+      Query<Map<String, dynamic>> query = firestore
           .collection('chats')
           .doc(chatId)
           .collection('messages')
           .orderBy('createdAt');
+
+      if (lastMessageId != null) {
+        final lastDocRef = await firestore
+            .collection('chats')
+            .doc(chatId)
+            .collection('messages')
+            .doc(lastMessageId)
+            .get();
+        query = query.startAfterDocument(lastDocRef);
+      }
+
       final snapshot = await query.get();
       return await Future.wait(snapshot.docs.map((messageDoc) async {
         final userModel = await firestore

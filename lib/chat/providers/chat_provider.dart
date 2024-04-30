@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/models/user_model.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/chat/models/chat_model.dart';
+import 'package:ktalk/chat/models/message_model.dart';
 import 'package:ktalk/chat/providers/chat_state.dart';
 import 'package:ktalk/chat/repositories/chat_repository.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
@@ -67,14 +68,23 @@ class ChatNotifier extends Notifier<ChatState> {
     }
   }
 
-  Future<void> getMessageList() async {
+  Future<void> getMessageList({
+    String? lastMessageId,
+  }) async {
     try {
       final chatModel = state.model as ChatModel;
-      final messageList =
-          await chatRepository.getMessageList(chatId: chatModel.id);
+      final messageList = await chatRepository.getMessageList(
+        chatId: chatModel.id,
+        lastMessageId: lastMessageId,
+      );
+
+      List<MessageModel> newMessageList = [
+        if (lastMessageId != null) ...state.messageList,
+        ...messageList,
+      ];
 
       state = state.copyWith(
-        messageList: messageList,
+        messageList: newMessageList,
       );
     } catch (_) {
       rethrow;
