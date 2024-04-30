@@ -23,6 +23,49 @@ class ChatRepository {
     required this.auth,
   });
 
+  Stream<List<ChatModel>> getChatList({
+    required UserModel currentUserModel,
+  }) {
+    try {
+      return firestore
+          .collection('users')
+          .doc(currentUserModel.uid)
+          .collection('chats')
+          .orderBy('createAt', descending: true)
+          .snapshots()
+          .asyncMap((event) async {
+        List<ChatModel> chatModelList = [];
+
+        for (final doc in event.docs) {
+          final chatData = doc.data();
+
+          List<String> userIdList = List<String>.from(chatData['userList']);
+
+          final userId = userIdList.firstWhere(
+            (element) => element != currentUserModel.uid,
+          );
+
+          final userModel = await firestore
+              .collection('users')
+              .doc(userId)
+              .get()
+              .then((value) => UserModel.fromMap(value.data()!));
+
+          final chatModel = ChatModel.fromMap(
+            map: chatData,
+            userList: [currentUserModel, userModel],
+          );
+
+          chatModelList.add(chatModel);
+        }
+
+        return chatModelList;
+      });
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   Future<ChatModel> enterChatFromFriendList({
     required Contact selectedContact,
   }) async {

@@ -8,6 +8,13 @@ import 'package:ktalk/chat/repositories/chat_repository.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/providers/loader_provider.dart';
 
+final chatListProvider = StreamProvider<List<ChatModel>>((ref) {
+  final currentUserModel = ref.watch(authProvider).userModel;
+  return ref.watch(chatRepositoryProvider).getChatList(
+        currentUserModel: currentUserModel,
+      );
+});
+
 final chatProvider = NotifierProvider<ChatNotifier, ChatState>(
     // () => ChatNotifier(),
     ChatNotifier.new);
