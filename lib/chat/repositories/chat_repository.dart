@@ -195,13 +195,15 @@ class ChatRepository {
   Future<List<MessageModel>> getMessageList({
     required String chatId,
     String? lastMessageId,
+    String? firstMessageId,
   }) async {
     try {
       Query<Map<String, dynamic>> query = firestore
           .collection('chats')
           .doc(chatId)
           .collection('messages')
-          .orderBy('createdAt');
+          .orderBy('createdAt')
+          .limitToLast(20);
 
       if (lastMessageId != null) {
         final lastDocRef = await firestore
@@ -211,6 +213,14 @@ class ChatRepository {
             .doc(lastMessageId)
             .get();
         query = query.startAfterDocument(lastDocRef);
+      } else if (firstMessageId != null) {
+        final firstDocRef = await firestore
+            .collection('chats')
+            .doc(chatId)
+            .collection('messages')
+            .doc(firstMessageId)
+            .get();
+        query = query.endBeforeDocument(firstDocRef);
       }
 
       final snapshot = await query.get();

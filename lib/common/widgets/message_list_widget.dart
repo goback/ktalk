@@ -11,14 +11,34 @@ class MessageListWidget extends ConsumerStatefulWidget {
 }
 
 class _MessageListWidgetState extends ConsumerState<MessageListWidget> {
+  final ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     _getMessageList();
+    scrollController.addListener(scrollListener);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
   }
 
   Future<void> _getMessageList() async {
     await ref.read(chatProvider.notifier).getMessageList();
+  }
+
+  void scrollListener() {
+    final baseState = ref.read(chatProvider);
+
+    if (baseState.hasPrev &&
+        scrollController.offset >= scrollController.position.maxScrollExtent) {
+      ref.read(chatProvider.notifier).getMessageList(
+            firstMessageId: baseState.messageList.first.messageId,
+          );
+    }
   }
 
   @override
@@ -40,6 +60,7 @@ class _MessageListWidgetState extends ConsumerState<MessageListWidget> {
     });
 
     return ListView.builder(
+      controller: scrollController,
       reverse: true,
       itemCount: messageList.length,
       itemBuilder: (context, index) {

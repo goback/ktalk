@@ -70,21 +70,25 @@ class ChatNotifier extends Notifier<ChatState> {
 
   Future<void> getMessageList({
     String? lastMessageId,
+    String? firstMessageId,
   }) async {
     try {
       final chatModel = state.model as ChatModel;
       final messageList = await chatRepository.getMessageList(
         chatId: chatModel.id,
         lastMessageId: lastMessageId,
+        firstMessageId: firstMessageId,
       );
 
       List<MessageModel> newMessageList = [
         if (lastMessageId != null) ...state.messageList,
         ...messageList,
+        if (firstMessageId != null) ...state.messageList,
       ];
 
       state = state.copyWith(
         messageList: newMessageList,
+        hasPrev: lastMessageId != null || messageList.length == 20,
       );
     } catch (_) {
       rethrow;
