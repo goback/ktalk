@@ -26,30 +26,33 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ? chatModel.userList[1]
         : UserModel.init();
 
-    return Scaffold(
-      backgroundColor: themeColor.background3Color,
-      appBar: AppBar(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
         backgroundColor: themeColor.background3Color,
-        title: Row(
+        appBar: AppBar(
+          backgroundColor: themeColor.background3Color,
+          title: Row(
+            children: [
+              CircleAvatar(
+                backgroundImage: userModel.photoURL == null
+                    ? const ExtendedAssetImageProvider(
+                        'assets/images/profile.png') as ImageProvider
+                    : ExtendedNetworkImageProvider(userModel.photoURL!),
+              ),
+              const SizedBox(width: 10),
+              Text(userModel.displayName),
+            ],
+          ),
+        ),
+        body: Column(
           children: [
-            CircleAvatar(
-              backgroundImage: userModel.photoURL == null
-                  ? const ExtendedAssetImageProvider(
-                      'assets/images/profile.png') as ImageProvider
-                  : ExtendedNetworkImageProvider(userModel.photoURL!),
+            Expanded(
+              child: MessageListWidget(),
             ),
-            const SizedBox(width: 10),
-            Text(userModel.displayName),
+            MessageInputFieldWidget(),
           ],
         ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: MessageListWidget(),
-          ),
-          MessageInputFieldWidget(),
-        ],
       ),
     );
   }

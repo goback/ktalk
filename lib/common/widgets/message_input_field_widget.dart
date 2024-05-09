@@ -18,6 +18,7 @@ class MessageInputFieldWidget extends ConsumerStatefulWidget {
 class _MessageInputFieldWidgetState
     extends ConsumerState<MessageInputFieldWidget> {
   final TextEditingController _textEditingController = TextEditingController();
+  bool isTextInputted = false;
 
   @override
   void dispose() {
@@ -31,6 +32,10 @@ class _MessageInputFieldWidgetState
             text: _textEditingController.text,
             messageType: MessageEnum.text,
           );
+      _textEditingController.clear();
+      setState(() {
+        isTextInputted = false;
+      });
     } catch (e, stackTrace) {
       logger.e(e);
       logger.e(stackTrace);
@@ -65,6 +70,17 @@ class _MessageInputFieldWidgetState
               ),
               contentPadding: const EdgeInsets.all(5),
             ),
+            onChanged: (value) {
+              if (value.isNotEmpty && !isTextInputted) {
+                setState(() {
+                  isTextInputted = true;
+                });
+              } else if (value.isEmpty && isTextInputted) {
+                setState(() {
+                  isTextInputted = false;
+                });
+              }
+            },
           ),
         ),
         Icon(
@@ -72,18 +88,19 @@ class _MessageInputFieldWidgetState
           color: themeColor.text2Color,
         ),
         const SizedBox(width: 15),
-        Container(
-          height: 55,
-          width: 55,
-          color: Colors.yellow,
-          child: GestureDetector(
-            onTap: _sendTextMessage,
-            child: const Icon(
-              Icons.send,
-              color: Colors.black,
+        if (isTextInputted)
+          Container(
+            height: 55,
+            width: 55,
+            color: Colors.yellow,
+            child: GestureDetector(
+              onTap: _sendTextMessage,
+              child: const Icon(
+                Icons.send,
+                color: Colors.black,
+              ),
             ),
           ),
-        ),
       ],
     );
   }
