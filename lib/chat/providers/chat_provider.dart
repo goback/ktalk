@@ -33,6 +33,19 @@ class ChatNotifier extends Notifier<ChatState> {
     return ChatState.init();
   }
 
+  void enterChatFromChatList({
+    required ChatModel chatModel,
+  }) {
+    try {
+      loaderNotifier.show();
+      state = state.copyWith(model: chatModel);
+    } catch (_) {
+      rethrow;
+    } finally {
+      loaderNotifier.hide();
+    }
+  }
+
   Future<void> enterChatFromFriendList({
     required Contact selectedContact,
   }) async {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
+import 'package:ktalk/chat/screens/chat_screen.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
@@ -28,6 +29,15 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
               final chatModel = data[index];
               final userModel = chatModel.userList[1];
               return ListTile(
+                onTap: () {
+                  ref.read(chatProvider.notifier).enterChatFromChatList(
+                        chatModel: chatModel,
+                      );
+                  Navigator.pushNamed(
+                    context,
+                    ChatScreen.routeName,
+                  ).then((value) => ref.invalidate(chatProvider));
+                },
                 leading: CircleAvatar(
                   backgroundImage: userModel.photoURL == null
                       ? const ExtendedAssetImageProvider(
