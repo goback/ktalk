@@ -23,6 +23,46 @@ class ChatRepository {
     required this.auth,
   });
 
+  Future<void> exitChat({
+    required ChatModel chatModel,
+    required String currentUserId,
+  }) async {
+    try {
+      final chatsDocRef = firestore.collection('chats').doc(chatModel.id);
+      final usersChatsDocRef = firestore
+          .collection('users')
+          .doc(currentUserId)
+          .collection('chats')
+          .doc(chatModel.id);
+
+      firestore.runTransaction((transaction) async {
+        transaction.update(chatsDocRef, {
+          'userList': FieldValue.arrayRemove([currentUserId]),
+        });
+
+        for (final userModel in chatModel.userList) {
+          if (userModel.uid == currentUserId || userModel.uid.isEmpty) continue;
+          final userChatDocRef = firestore
+              .collection('users')
+              .doc(userModel.uid)
+              .collection('chats')
+              .doc(chatModel.id);
+          transaction.update(userChatDocRef, {
+            'userList': FieldValue.arrayRemove([currentUserId]),
+          });
+          transaction.update(userChatDocRef, {
+            'userList': FieldValue.arrayUnion(['']),
+            'createAt': Timestamp.now(),
+          });
+        }
+
+        transaction.delete(usersChatsDocRef);
+      });
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   Stream<List<ChatModel>> getChatList({
     required UserModel currentUserModel,
   }) {

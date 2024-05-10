@@ -33,6 +33,19 @@ class ChatNotifier extends Notifier<ChatState> {
     return ChatState.init();
   }
 
+  Future<void> exitChat({
+    required ChatModel chatModel,
+  }) async {
+    try {
+      await chatRepository.exitChat(
+        chatModel: chatModel,
+        currentUserId: currentUserModel.uid,
+      );
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   void enterChatFromChatList({
     required ChatModel chatModel,
   }) {

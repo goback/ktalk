@@ -34,7 +34,11 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                   extentRatio: 0.25,
                   children: [
                     SlidableAction(
-                      onPressed: (context) {},
+                      onPressed: (context) async {
+                        await ref
+                            .read(chatProvider.notifier)
+                            .exitChat(chatModel: chatModel);
+                      },
                       backgroundColor: Colors.red,
                       icon: Icons.exit_to_app_rounded,
                       label: S.current.exit,
