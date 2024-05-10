@@ -65,7 +65,9 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                       radius: 30,
                     ),
                     title: Text(
-                      userModel.displayName,
+                      userModel.displayName.isEmpty
+                          ? S.current.unknown
+                          : userModel.displayName,
                       style: const TextStyle(fontSize: 18),
                     ),
                     subtitle: Text(

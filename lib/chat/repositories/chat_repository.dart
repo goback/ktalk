@@ -77,6 +77,7 @@ class ChatRepository {
         List<ChatModel> chatModelList = [];
 
         for (final doc in event.docs) {
+          UserModel userModel = UserModel.init();
           final chatData = doc.data();
 
           List<String> userIdList = List<String>.from(chatData['userList']);
@@ -85,11 +86,13 @@ class ChatRepository {
             (element) => element != currentUserModel.uid,
           );
 
-          final userModel = await firestore
-              .collection('users')
-              .doc(userId)
-              .get()
-              .then((value) => UserModel.fromMap(value.data()!));
+          if (userId.isNotEmpty) {
+            userModel = await firestore
+                .collection('users')
+                .doc(userId)
+                .get()
+                .then((value) => UserModel.fromMap(value.data()!));
+          }
 
           final chatModel = ChatModel.fromMap(
             map: chatData,

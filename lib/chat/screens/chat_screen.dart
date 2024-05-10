@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/models/user_model.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
+import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/widgets/message_input_field_widget.dart';
 import 'package:ktalk/common/widgets/message_list_widget.dart';
 
@@ -41,7 +42,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     : ExtendedNetworkImageProvider(userModel.photoURL!),
               ),
               const SizedBox(width: 10),
-              Text(userModel.displayName),
+              Text(
+                userModel.displayName.isEmpty
+                    ? S.current.unknown
+                    : userModel.displayName,
+              ),
             ],
           ),
         ),
