@@ -62,6 +62,64 @@ class _MessageInputFieldWidgetState
     }
   }
 
+  Widget _mediaFileUploadButton({
+    required IconData iconData,
+    required Color backgroundColor,
+    required VoidCallback onPressed,
+    required String text,
+  }) {
+    final themeColor = ref.watch(customThemeProvider).themeColor;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: const CircleBorder(),
+              backgroundColor: backgroundColor,
+              minimumSize: const Size(50, 50),
+            ),
+            onPressed: onPressed,
+            child: Icon(
+              iconData,
+              color: themeColor.text1Color,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(text),
+        ],
+      ),
+    );
+  }
+
+  void _showMediaFileUploadSheet() {
+    final themeColor = ref.watch(customThemeProvider).themeColor;
+    showBottomSheet(
+      shape: const LinearBorder(),
+      backgroundColor: themeColor.background2Color,
+      context: context,
+      builder: (context) {
+        return Row(
+          children: [
+            _mediaFileUploadButton(
+              iconData: Icons.image_outlined,
+              backgroundColor: Colors.lightGreen,
+              onPressed: () {},
+              text: S.current.image,
+            ),
+            _mediaFileUploadButton(
+              iconData: Icons.camera_alt_outlined,
+              backgroundColor: Colors.blueAccent,
+              onPressed: () {},
+              text: S.current.video,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeColor = ref.watch(customThemeProvider).themeColor;
@@ -100,11 +158,14 @@ class _MessageInputFieldWidgetState
             color: themeColor.background2Color,
             child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Icon(
-                    Icons.add,
-                    color: themeColor.text2Color,
+                GestureDetector(
+                  onTap: () => _showMediaFileUploadSheet(),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Icon(
+                      Icons.add,
+                      color: themeColor.text2Color,
+                    ),
                   ),
                 ),
                 Expanded(
