@@ -1,25 +1,33 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_contacts/contact.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/models/user_model.dart';
 import 'package:ktalk/chat/models/chat_model.dart';
 import 'package:ktalk/chat/models/message_model.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
+import 'package:mime/mime.dart';
+import 'package:uuid/uuid.dart';
 
 final chatRepositoryProvider = Provider<ChatRepository>(
   (ref) => ChatRepository(
     firestore: FirebaseFirestore.instance,
+    storage: FirebaseStorage.instance,
     auth: FirebaseAuth.instance,
   ),
 );
 
 class ChatRepository {
   final FirebaseFirestore firestore;
+  final FirebaseStorage storage;
   final FirebaseAuth auth;
 
   const ChatRepository({
     required this.firestore,
+    required this.storage,
     required this.auth,
   });
 
@@ -188,6 +196,7 @@ class ChatRepository {
 
   Future<void> sendMessage({
     String? text,
+    File? file,
     required ChatModel chatModel,
     required UserModel currentUserModel,
     required MessageEnum messageType,
@@ -203,6 +212,20 @@ class ChatRepository {
           .doc(chatModel.id)
           .collection('messages')
           .doc();
+
+      if (messageType != MessageEnum.text) {
+        String? mimeType = lookupMimeType(file!.path); // 'image/png'
+        final metadata = SettableMetadata(contentType: mimeType);
+        final filename = '${const Uuid().v1()}.${mimeType!.split('/')[1]}';
+
+        TaskSnapshot snapshot = await storage
+            .ref()
+            .child('chat')
+            .child(chatModel.id)
+            .child(filename)
+            .putFile(file, metadata);
+        text = await snapshot.ref.getDownloadURL();
+      }
 
       final messageModel = MessageModel(
         userId: currentUserModel.uid,

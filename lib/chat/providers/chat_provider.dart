@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_contacts/contact.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/models/user_model.dart';
@@ -80,11 +82,13 @@ class ChatNotifier extends Notifier<ChatState> {
 
   Future<void> sendMessage({
     String? text,
+    File? file,
     required MessageEnum messageType,
   }) async {
     try {
       await chatRepository.sendMessage(
         text: text,
+        file: file,
         chatModel: state.model as ChatModel,
         currentUserModel: currentUserModel,
         messageType: messageType,

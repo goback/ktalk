@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
@@ -105,7 +108,11 @@ class _MessageInputFieldWidgetState
             _mediaFileUploadButton(
               iconData: Icons.image_outlined,
               backgroundColor: Colors.lightGreen,
-              onPressed: () {},
+              onPressed: () {
+                _sendMediaMessage(
+                  messageType: MessageEnum.image,
+                );
+              },
               text: S.current.image,
             ),
             _mediaFileUploadButton(
@@ -118,6 +125,26 @@ class _MessageInputFieldWidgetState
         );
       },
     );
+  }
+
+  Future<void> _sendMediaMessage({
+    required MessageEnum messageType,
+  }) async {
+    XFile? xFile;
+    if (messageType == MessageEnum.image) {
+      xFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxHeight: 1024,
+        maxWidth: 1024,
+      );
+    }
+
+    if (xFile == null) return;
+
+    ref.watch(chatProvider.notifier).sendMessage(
+          messageType: messageType,
+          file: File(xFile.path),
+        );
   }
 
   @override
