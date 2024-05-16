@@ -83,7 +83,10 @@ class _MessageInputFieldWidgetState
               backgroundColor: backgroundColor,
               minimumSize: const Size(50, 50),
             ),
-            onPressed: onPressed,
+            onPressed: () {
+              onPressed();
+              Navigator.pop(context);
+            },
             child: Icon(
               iconData,
               color: themeColor.text1Color,

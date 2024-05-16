@@ -202,6 +202,10 @@ class ChatRepository {
     required MessageEnum messageType,
   }) async {
     try {
+      if (messageType != MessageEnum.text) {
+        text = messageType.toText();
+      }
+
       chatModel = chatModel.copyWith(
         createAt: Timestamp.now(),
         lastMessage: text,

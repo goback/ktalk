@@ -6,6 +6,7 @@ import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/chat/models/message_model.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
+import 'package:ktalk/common/widgets/custom_image_viewer_widget.dart';
 
 class MessageCardWidget extends ConsumerStatefulWidget {
   final MessageModel messageModel;
@@ -26,13 +27,20 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget> {
     required bool isMe,
   }) {
     final themeColor = ref.watch(customThemeProvider).themeColor;
-    return Text(
-      text,
-      style: TextStyle(
-        color: isMe ? Colors.black : themeColor.text1Color,
-        fontSize: 16,
-      ),
-    );
+    switch (messageType) {
+      case MessageEnum.text:
+        return Text(
+          text,
+          style: TextStyle(
+            color: isMe ? Colors.black : themeColor.text1Color,
+            fontSize: 16,
+          ),
+        );
+      case MessageEnum.image:
+        return CustomImageViewerWidget(imageUrl: text);
+      default:
+        return Text('video');
+    }
   }
 
   @override
