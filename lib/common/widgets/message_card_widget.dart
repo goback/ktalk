@@ -7,6 +7,7 @@ import 'package:ktalk/chat/models/message_model.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/widgets/custom_image_viewer_widget.dart';
+import 'package:ktalk/common/widgets/video_download_widget.dart';
 
 class MessageCardWidget extends ConsumerStatefulWidget {
   final MessageModel messageModel;
@@ -39,7 +40,7 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget> {
       case MessageEnum.image:
         return CustomImageViewerWidget(imageUrl: text);
       default:
-        return Text('video');
+        return VideoDownloadWidget(downloadUrl: text);
     }
   }
 

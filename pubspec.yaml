@@ -54,6 +54,7 @@ dependencies:
   emoji_picker_flutter: ^2.2.0
   flutter_slidable: ^3.1.0
   uuid: ^4.4.0
+  flutter_file_downloader: ^1.2.1
 
 dev_dependencies:
   flutter_test:
