@@ -121,7 +121,11 @@ class _MessageInputFieldWidgetState
             _mediaFileUploadButton(
               iconData: Icons.camera_alt_outlined,
               backgroundColor: Colors.blueAccent,
-              onPressed: () {},
+              onPressed: () {
+                _sendMediaMessage(
+                  messageType: MessageEnum.video,
+                );
+              },
               text: S.current.video,
             ),
           ],
@@ -139,6 +143,10 @@ class _MessageInputFieldWidgetState
         source: ImageSource.gallery,
         maxHeight: 1024,
         maxWidth: 1024,
+      );
+    } else if (messageType == MessageEnum.video) {
+      xFile = await ImagePicker().pickVideo(
+        source: ImageSource.gallery,
       );
     }
 
