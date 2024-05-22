@@ -41,6 +41,12 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
     ).animate(_controller);
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Widget _messageText({
     required String text,
     required MessageEnum messageType,
@@ -73,100 +79,127 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
     final currentUserId = ref.watch(authProvider).userModel.uid;
     final isMe = messageModel.userId == currentUserId;
 
-    return GestureDetector(
-      onHorizontalDragUpdate: (details) {
-        _controller.value -= (details.primaryDelta ?? 0.0) / 150;
-      },
-      onHorizontalDragEnd: (details) {
-        _controller.reverse();
-      },
-      child: AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            return Transform.translate(
-              offset: Offset(_controller.value * -50, 0),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisAlignment:
-                      isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (!isMe)
-                      CircleAvatar(
-                        backgroundImage: userModel.photoURL == null
-                            ? const ExtendedAssetImageProvider(
-                                'assets/images/profile.png') as ImageProvider
-                            : ExtendedNetworkImageProvider(userModel.photoURL!),
-                      ),
-                    const SizedBox(width: 5),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (!isMe) Text(userModel.displayName),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            if (isMe)
-                              Padding(
-                                padding: const EdgeInsets.only(right: 5),
-                                child: Text(
-                                  createdAt,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: themeColor.text2Color,
-                                  ),
-                                ),
-                              ),
-                            Container(
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width * 0.70,
-                                minWidth: 80,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isMe
-                                    ? Colors.yellow
-                                    : themeColor.background2Color,
-                                borderRadius: BorderRadius.only(
-                                  topRight: const Radius.circular(12),
-                                  topLeft: isMe
-                                      ? const Radius.circular(12)
-                                      : const Radius.circular(0),
-                                  bottomRight: isMe
-                                      ? const Radius.circular(0)
-                                      : const Radius.circular(12),
-                                  bottomLeft: const Radius.circular(12),
-                                ),
-                              ),
-                              padding: const EdgeInsets.all(7),
-                              margin: const EdgeInsets.symmetric(vertical: 5),
-                              child: _messageText(
-                                text: messageModel.text,
-                                messageType: messageModel.type,
-                                isMe: isMe,
-                              ),
-                            ),
-                            if (!isMe)
-                              Padding(
-                                padding: const EdgeInsets.only(left: 5),
-                                child: Text(
-                                  createdAt,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: themeColor.text2Color,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+    return Stack(
+      alignment: AlignmentDirectional.centerEnd,
+      children: [
+        AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) {
+              return Opacity(
+                opacity: _animation.value,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 15),
+                  child: Icon(
+                    Icons.subdirectory_arrow_right,
+                    color: themeColor.text2Color,
+                  ),
                 ),
-              ),
-            );
-          }),
+              );
+            }),
+        GestureDetector(
+          onHorizontalDragUpdate: (details) {
+            _controller.value -= (details.primaryDelta ?? 0.0) / 150;
+          },
+          onHorizontalDragEnd: (details) {
+            _controller.reverse();
+          },
+          child: AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(_controller.value * -50, 0),
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        mainAxisAlignment: isMe
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (!isMe)
+                            CircleAvatar(
+                              backgroundImage: userModel.photoURL == null
+                                  ? const ExtendedAssetImageProvider(
+                                          'assets/images/profile.png')
+                                      as ImageProvider
+                                  : ExtendedNetworkImageProvider(
+                                      userModel.photoURL!),
+                            ),
+                          const SizedBox(width: 5),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (!isMe) Text(userModel.displayName),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  if (isMe)
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 5),
+                                      child: Text(
+                                        createdAt,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: themeColor.text2Color,
+                                        ),
+                                      ),
+                                    ),
+                                  Container(
+                                    constraints: BoxConstraints(
+                                      maxWidth:
+                                          MediaQuery.of(context).size.width *
+                                              0.70,
+                                      minWidth: 80,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isMe
+                                          ? Colors.yellow
+                                          : themeColor.background2Color,
+                                      borderRadius: BorderRadius.only(
+                                        topRight: const Radius.circular(12),
+                                        topLeft: isMe
+                                            ? const Radius.circular(12)
+                                            : const Radius.circular(0),
+                                        bottomRight: isMe
+                                            ? const Radius.circular(0)
+                                            : const Radius.circular(12),
+                                        bottomLeft: const Radius.circular(12),
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.all(7),
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 5),
+                                    child: _messageText(
+                                      text: messageModel.text,
+                                      messageType: messageModel.type,
+                                      isMe: isMe,
+                                    ),
+                                  ),
+                                  if (!isMe)
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 5),
+                                      child: Text(
+                                        createdAt,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: themeColor.text2Color,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+        ),
+      ],
     );
   }
 }
