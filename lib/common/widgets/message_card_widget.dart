@@ -6,7 +6,9 @@ import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/chat/models/message_model.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
+import 'package:ktalk/common/models/theme_color.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
+import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/widgets/custom_image_viewer_widget.dart';
 import 'package:ktalk/common/widgets/video_download_widget.dart';
 
@@ -68,6 +70,61 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
       default:
         return VideoDownloadWidget(downloadUrl: text);
     }
+  }
+
+  Widget mediaPreviewWidget({
+    required String url,
+    required MessageEnum messageType,
+  }) {
+    switch (messageType) {
+      case MessageEnum.image:
+        return CustomImageViewerWidget(imageUrl: url);
+      default:
+        return VideoDownloadWidget(downloadUrl: url);
+    }
+  }
+
+  Widget replyMessageInfoWidget({
+    required bool isMe,
+    required MessageModel replyMessageModel,
+    required String currentUserId,
+    required ThemeColor themeColor,
+  }) {
+    final baseModel = ref.read(chatProvider).model;
+    final userName = currentUserId == replyMessageModel.userId
+        ? S.current.receiver
+        : baseModel.userList[1].displayName.isNotEmpty
+            ? baseModel.userList[1].displayName
+            : S.current.unknown;
+
+    return ListTile(
+      visualDensity: VisualDensity.compact,
+      horizontalTitleGap: 10,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+      leading: replyMessageModel.type != MessageEnum.text
+          ? FittedBox(
+              child: mediaPreviewWidget(
+                url: replyMessageModel.text,
+                messageType: replyMessageModel.type,
+              ),
+            )
+          : null,
+      title: Text(
+        S.current.replyTo(userName),
+        style: TextStyle(
+          color: isMe ? Colors.black : themeColor.text1Color,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      subtitle: Text(
+        replyMessageModel.type == MessageEnum.text
+            ? replyMessageModel.text
+            : replyMessageModel.type.toText(),
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: themeColor.text2Color),
+      ),
+    );
   }
 
   @override
@@ -176,10 +233,25 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
                                     padding: const EdgeInsets.all(7),
                                     margin:
                                         const EdgeInsets.symmetric(vertical: 5),
-                                    child: _messageText(
-                                      text: messageModel.text,
-                                      messageType: messageModel.type,
-                                      isMe: isMe,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (messageModel.replyMessageModel !=
+                                            null)
+                                          replyMessageInfoWidget(
+                                            isMe: isMe,
+                                            replyMessageModel:
+                                                messageModel.replyMessageModel!,
+                                            currentUserId: currentUserId,
+                                            themeColor: themeColor,
+                                          ),
+                                        _messageText(
+                                          text: messageModel.text,
+                                          messageType: messageModel.type,
+                                          isMe: isMe,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   if (!isMe)
