@@ -11,6 +11,10 @@ import 'package:ktalk/chat/repositories/chat_repository.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/providers/loader_provider.dart';
 
+final replyMessageModelProvider = AutoDisposeStateProvider<MessageModel?>(
+  (ref) => null,
+);
+
 final chatListProvider = StreamProvider<List<ChatModel>>((ref) {
   final currentUserModel = ref.watch(authProvider).userModel;
   return ref.watch(chatRepositoryProvider).getChatList(

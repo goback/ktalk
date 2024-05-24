@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/chat/models/message_model.dart';
+import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/widgets/custom_image_viewer_widget.dart';
@@ -101,6 +102,8 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
             _controller.value -= (details.primaryDelta ?? 0.0) / 150;
           },
           onHorizontalDragEnd: (details) {
+            ref.read(replyMessageModelProvider.notifier).state =
+                widget.messageModel;
             _controller.reverse();
           },
           child: AnimatedBuilder(
