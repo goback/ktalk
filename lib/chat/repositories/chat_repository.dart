@@ -200,6 +200,7 @@ class ChatRepository {
     required ChatModel chatModel,
     required UserModel currentUserModel,
     required MessageEnum messageType,
+    required MessageModel? replyMessageModel,
   }) async {
     try {
       if (messageType != MessageEnum.text) {
@@ -238,6 +239,7 @@ class ChatRepository {
         createdAt: Timestamp.now(),
         messageId: messageDocRef.id,
         userModel: UserModel.init(),
+        replyMessageModel: replyMessageModel,
       );
 
       await firestore.runTransaction((transaction) async {

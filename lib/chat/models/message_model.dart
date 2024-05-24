@@ -9,6 +9,7 @@ class MessageModel {
   final Timestamp createdAt;
   final String messageId;
   final UserModel userModel;
+  final MessageModel? replyMessageModel;
 
   const MessageModel({
     required this.userId,
@@ -17,6 +18,7 @@ class MessageModel {
     required this.createdAt,
     required this.messageId,
     required this.userModel,
+    required this.replyMessageModel,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +28,7 @@ class MessageModel {
       'type': type.name,
       'createdAt': createdAt,
       'messageId': messageId,
+      'replyMessageModel': replyMessageModel?.toMap(),
     };
   }
 
@@ -40,6 +43,12 @@ class MessageModel {
       createdAt: map['createdAt'],
       messageId: map['messageId'],
       userModel: userModel,
+      replyMessageModel: map['replyMessageModel'] == null
+          ? null
+          : MessageModel.fromMap(
+              map['replyMessageModel'],
+              UserModel.init(),
+            ),
     );
   }
 
@@ -50,6 +59,7 @@ class MessageModel {
     Timestamp? createdAt,
     String? messageId,
     UserModel? userModel,
+    MessageModel? replyMessageModel,
   }) {
     return MessageModel(
       userId: userId ?? this.userId,
@@ -58,11 +68,12 @@ class MessageModel {
       createdAt: createdAt ?? this.createdAt,
       messageId: messageId ?? this.messageId,
       userModel: userModel ?? this.userModel,
+      replyMessageModel: replyMessageModel,
     );
   }
 
   @override
   String toString() {
-    return 'MessageModel{userId: $userId, text: $text, type: $type, createdAt: $createdAt, messageId: $messageId, userModel: $userModel}';
+    return 'MessageModel{userId: $userId, text: $text, type: $type, createdAt: $createdAt, messageId: $messageId, userModel: $userModel, replyMessageModel: $replyMessageModel}';
   }
 }

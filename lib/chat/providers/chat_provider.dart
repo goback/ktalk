@@ -96,10 +96,13 @@ class ChatNotifier extends Notifier<ChatState> {
         chatModel: state.model as ChatModel,
         currentUserModel: currentUserModel,
         messageType: messageType,
+        replyMessageModel: ref.read(replyMessageModelProvider),
       );
     } catch (_) {
       rethrow;
     }
+
+    ref.read(replyMessageModelProvider.notifier).state = null;
   }
 
   Future<void> getMessageList({

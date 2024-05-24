@@ -103,7 +103,9 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
           },
           onHorizontalDragEnd: (details) {
             ref.read(replyMessageModelProvider.notifier).state =
-                widget.messageModel;
+                widget.messageModel.copyWith(
+              replyMessageModel: null,
+            );
             _controller.reverse();
           },
           child: AnimatedBuilder(
