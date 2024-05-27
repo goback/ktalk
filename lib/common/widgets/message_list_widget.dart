@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
+import 'package:ktalk/common/providers/message_provider.dart';
 import 'package:ktalk/common/widgets/message_card_widget.dart';
 
 class MessageListWidget extends ConsumerStatefulWidget {
@@ -59,14 +60,20 @@ class _MessageListWidgetState extends ConsumerState<MessageListWidget> {
       }
     });
 
-    return ListView.builder(
+    return SingleChildScrollView(
       controller: scrollController,
       reverse: true,
-      itemCount: messageList.length,
-      itemBuilder: (context, index) {
-        final reversedMessageList = messageList.reversed.toList();
-        return MessageCardWidget(messageModel: reversedMessageList[index]);
-      },
+      child: Column(
+        children: [
+          for (final item in messageList)
+            ProviderScope(
+              overrides: [
+                messageProvider.overrideWithValue(item),
+              ],
+              child: const MessageCardWidget(),
+            )
+        ],
+      ),
     );
   }
 }

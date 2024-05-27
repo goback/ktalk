@@ -8,17 +8,13 @@ import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/models/theme_color.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
+import 'package:ktalk/common/providers/message_provider.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/widgets/custom_image_viewer_widget.dart';
 import 'package:ktalk/common/widgets/video_download_widget.dart';
 
 class MessageCardWidget extends ConsumerStatefulWidget {
-  final MessageModel messageModel;
-
-  const MessageCardWidget({
-    super.key,
-    required this.messageModel,
-  });
+  const MessageCardWidget({super.key});
 
   @override
   ConsumerState<MessageCardWidget> createState() => _MessageCardWidgetState();
@@ -130,7 +126,7 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
   @override
   Widget build(BuildContext context) {
     final themeColor = ref.watch(customThemeProvider).themeColor;
-    final messageModel = widget.messageModel;
+    final messageModel = ref.watch(messageProvider);
     final userModel = messageModel.userModel;
     final createdAt = DateFormat.Hm().format(messageModel.createdAt.toDate());
 
@@ -160,7 +156,7 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
           },
           onHorizontalDragEnd: (details) {
             ref.read(replyMessageModelProvider.notifier).state =
-                widget.messageModel.copyWith(
+                messageModel.copyWith(
               replyMessageModel: null,
             );
             _controller.reverse();
