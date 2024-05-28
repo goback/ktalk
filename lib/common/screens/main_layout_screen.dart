@@ -87,9 +87,9 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                   ref.read(customThemeProvider.notifier).toggleThemeMode();
                 },
               ),
-              const ListTile(
-                leading: Icon(Icons.language),
-                title: Text('언어'),
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: Text(S.current.language),
               ),
               RadioListTile(
                 title: const Text('한국어'),

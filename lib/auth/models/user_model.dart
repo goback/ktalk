@@ -22,10 +22,10 @@ class UserModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'displayName': this.displayName,
-      'uid': this.uid,
-      'photoURL': this.photoURL,
-      'phoneNumber': this.phoneNumber,
+      'displayName': displayName,
+      'uid': uid,
+      'photoURL': photoURL,
+      'phoneNumber': phoneNumber,
     };
   }
 

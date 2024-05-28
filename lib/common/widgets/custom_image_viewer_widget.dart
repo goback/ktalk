@@ -27,7 +27,7 @@ class CustomImageViewerWidget extends StatelessWidget {
       },
       child: ExtendedImage.network(
         imageUrl,
-        height: 200,
+        constraints: const BoxConstraints(maxHeight: 200),
       ),
     );
   }

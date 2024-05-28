@@ -145,8 +145,9 @@ class _PhoneNumberInputScreenState
                       if (form == null || !form.validate()) {
                         return;
                       }
+                      final myNavigator = Navigator.of(context);
                       await sendOTP();
-                      Navigator.pushNamed(context, OTPScreen.routeName);
+                      myNavigator.pushNamed(OTPScreen.routeName);
                     } catch (e, stackTrace) {
                       GlobalNavigator.showAlertDialog(text: e.toString());
                       logger.d(stackTrace);

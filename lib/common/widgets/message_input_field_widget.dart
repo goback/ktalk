@@ -54,7 +54,7 @@ class _MessageInputFieldWidgetState
 
   Future<void> _sendTextMessage() async {
     try {
-      ref.watch(chatProvider.notifier).sendMessage(
+      ref.read(chatProvider.notifier).sendMessage(
             text: _textEditingController.text,
             messageType: MessageEnum.text,
           );
@@ -75,8 +75,8 @@ class _MessageInputFieldWidgetState
     required Color backgroundColor,
     required VoidCallback onPressed,
     required String text,
+    required ThemeColor themeColor,
   }) {
-    final themeColor = ref.watch(customThemeProvider).themeColor;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
       child: Column(
@@ -104,8 +104,9 @@ class _MessageInputFieldWidgetState
     );
   }
 
-  void _showMediaFileUploadSheet() {
-    final themeColor = ref.watch(customThemeProvider).themeColor;
+  void _showMediaFileUploadSheet({
+    required ThemeColor themeColor,
+  }) {
     showBottomSheet(
       shape: const LinearBorder(),
       backgroundColor: themeColor.background2Color,
@@ -122,6 +123,7 @@ class _MessageInputFieldWidgetState
                 );
               },
               text: S.current.image,
+              themeColor: themeColor,
             ),
             _mediaFileUploadButton(
               iconData: Icons.camera_alt_outlined,
@@ -132,6 +134,7 @@ class _MessageInputFieldWidgetState
                 );
               },
               text: S.current.video,
+              themeColor: themeColor,
             ),
           ],
         );
@@ -157,7 +160,7 @@ class _MessageInputFieldWidgetState
 
     if (xFile == null) return;
 
-    ref.watch(chatProvider.notifier).sendMessage(
+    ref.read(chatProvider.notifier).sendMessage(
           messageType: messageType,
           file: File(xFile.path),
         );
@@ -264,7 +267,8 @@ class _MessageInputFieldWidgetState
               children: [
                 if (!isReplyMessage)
                   GestureDetector(
-                    onTap: () => _showMediaFileUploadSheet(),
+                    onTap: () =>
+                        _showMediaFileUploadSheet(themeColor: themeColor),
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       child: Icon(

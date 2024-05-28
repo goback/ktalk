@@ -26,16 +26,18 @@ class FriendListScreen extends ConsumerWidget {
               return ListTile(
                 onTap: () async {
                   try {
+                    final myNavigator = Navigator.of(context);
                     await ref
                         .read(chatProvider.notifier)
                         .enterChatFromFriendList(
                           selectedContact: contact,
                         );
 
-                    Navigator.pushNamed(
-                      context,
-                      ChatScreen.routeName,
-                    ).then((value) => ref.invalidate(chatProvider));
+                    myNavigator
+                        .pushNamed(
+                          ChatScreen.routeName,
+                        )
+                        .then((value) => ref.invalidate(chatProvider));
                   } catch (e, stackTrace) {
                     logger.e(e);
                     logger.e(stackTrace);

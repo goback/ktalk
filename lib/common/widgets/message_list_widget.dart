@@ -44,8 +44,9 @@ class _MessageListWidgetState extends ConsumerState<MessageListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final baseModel = ref.watch(chatProvider).model;
-    final messageList = ref.watch(chatProvider).messageList;
+    final status = ref.watch(chatProvider);
+    final baseModel = status.model;
+    final messageList = status.messageList;
 
     ref.listen(chatListProvider, (previous, next) {
       final updatedModelList = next.value;
@@ -54,7 +55,7 @@ class _MessageListWidgetState extends ConsumerState<MessageListWidget> {
       if (updatedModelList != null && updatedModel!.id == baseModel.id) {
         final lastMessageId =
             messageList.isNotEmpty ? messageList.last.messageId : null;
-        ref.watch(chatProvider.notifier).getMessageList(
+        ref.read(chatProvider.notifier).getMessageList(
               lastMessageId: lastMessageId,
             );
       }

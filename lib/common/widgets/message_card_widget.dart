@@ -50,8 +50,8 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
     required String text,
     required MessageEnum messageType,
     required bool isMe,
+    required ThemeColor themeColor,
   }) {
-    final themeColor = ref.watch(customThemeProvider).themeColor;
     switch (messageType) {
       case MessageEnum.text:
         return Text(
@@ -155,10 +155,12 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
             _controller.value -= (details.primaryDelta ?? 0.0) / 150;
           },
           onHorizontalDragEnd: (details) {
-            ref.read(replyMessageModelProvider.notifier).state =
-                messageModel.copyWith(
-              replyMessageModel: null,
-            );
+            if (_controller.value >= 0.4) {
+              ref.read(replyMessageModelProvider.notifier).state =
+                  messageModel.copyWith(
+                replyMessageModel: null,
+              );
+            }
             _controller.reverse();
           },
           child: AnimatedBuilder(
@@ -246,6 +248,7 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
                                           text: messageModel.text,
                                           messageType: messageModel.type,
                                           isMe: isMe,
+                                          themeColor: themeColor,
                                         ),
                                       ],
                                     ),

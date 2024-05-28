@@ -50,7 +50,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ],
           ),
         ),
-        body: Column(
+        body: const Column(
           children: [
             Expanded(
               child: MessageListWidget(),

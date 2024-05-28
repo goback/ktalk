@@ -43,10 +43,11 @@ class OTPScreen extends ConsumerWidget {
                   ),
                   onSubmit: (value) async {
                     try {
+                      final myNavigator = Navigator.of(context);
                       await ref
                           .read(authProvider.notifier)
                           .verifyOTP(userOTP: value);
-                      Navigator.popUntil(context, (route) => route.isFirst);
+                      myNavigator.popUntil((route) => route.isFirst);
                     } catch (e, stackTrace) {
                       GlobalNavigator.showAlertDialog(text: e.toString());
                       logger.d(stackTrace);
