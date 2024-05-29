@@ -8,6 +8,7 @@ import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/providers/locale_provider.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/friend/screens/friend_list_screen.dart';
+import 'package:ktalk/group/screens/group_list_screen.dart';
 
 class MainLayoutScreen extends ConsumerStatefulWidget {
   const MainLayoutScreen({super.key});
@@ -129,9 +130,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
           children: [
             FriendListScreen(),
             ChatListScreen(),
-            Center(
-              child: Text('3번'),
-            ),
+            GroupListScreen(),
           ],
         ),
       ),

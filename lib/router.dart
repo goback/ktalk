@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ktalk/auth/screens/otp_screen.dart';
 import 'package:ktalk/chat/screens/chat_screen.dart';
+import 'package:ktalk/common/screens/create_group_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -11,6 +12,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case ChatScreen.routeName:
       return MaterialPageRoute(
         builder: (context) => const ChatScreen(),
+      );
+    case CreateGroupScreen.routeName:
+      return MaterialPageRoute(
+        builder: (context) => const CreateGroupScreen(),
       );
     default:
       return MaterialPageRoute(
