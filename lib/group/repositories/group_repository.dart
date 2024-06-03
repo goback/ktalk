@@ -29,6 +29,59 @@ class GroupRepository {
     required this.storage,
   });
 
+  Stream<List<GroupModel>> getGroupList({
+    required UserModel currentUserModel,
+  }) {
+    try {
+      return firestore
+          .collection('users')
+          .doc(currentUserModel.uid)
+          .collection('groups')
+          .orderBy('createAt', descending: true)
+          .snapshots()
+          .asyncMap((event) async {
+        List<GroupModel> groupModelList = [];
+
+        for (final doc in event.docs) {
+          final groupData = doc.data();
+
+          List<String> userIdList = List<String>.from(groupData['userList']);
+
+          final userModelList = await Future.wait(userIdList.map(
+            (userId) async {
+              if (userId.isEmpty) {
+                return UserModel.init();
+              } else if (currentUserModel.uid != userId) {
+                return await firestore
+                    .collection('users')
+                    .doc(userId)
+                    .get()
+                    .then(
+                  (value) {
+                    return UserModel.fromMap(value.data()!);
+                  },
+                );
+              } else {
+                return currentUserModel;
+              }
+            },
+          ).toList());
+
+          final groupModel = GroupModel.fromMap(
+            map: groupData,
+            userList: userModelList,
+          );
+
+          groupModelList.add(groupModel);
+        }
+
+        return groupModelList;
+      });
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   Future<void> sendMessage({
     String? text,
     File? file,

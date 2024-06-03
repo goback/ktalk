@@ -16,6 +16,15 @@ final groupProvider = NotifierProvider<GroupNotifier, GroupState>(
   GroupNotifier.new,
 );
 
+final groupListProvider = StreamProvider<List<GroupModel>>(
+  (ref) {
+    final currentUserModel = ref.watch(authProvider).userModel;
+    return ref.watch(groupRepositoryProvider).getGroupList(
+          currentUserModel: currentUserModel,
+        );
+  },
+);
+
 class GroupNotifier extends Notifier<GroupState> {
   late LoaderNotifier loaderNotifier;
   late GroupRepository groupRepository;
@@ -27,6 +36,19 @@ class GroupNotifier extends Notifier<GroupState> {
     groupRepository = ref.watch(groupRepositoryProvider);
     currentUserModel = ref.watch(authProvider).userModel;
     return GroupState.init();
+  }
+
+  void enterGroupChatFromGroupList({
+    required GroupModel groupModel,
+  }) {
+    try {
+      loaderNotifier.show();
+      state = state.copyWith(model: groupModel);
+    } catch (_) {
+      rethrow;
+    } finally {
+      loaderNotifier.hide();
+    }
   }
 
   Future<void> sendMessage({
