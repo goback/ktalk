@@ -7,6 +7,7 @@ import 'package:ktalk/chat/models/message_model.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/models/theme_color.dart';
+import 'package:ktalk/common/providers/base_provider.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/providers/message_provider.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
@@ -86,7 +87,7 @@ class _MessageCardWidgetState extends ConsumerState<MessageCardWidget>
     required String currentUserId,
     required ThemeColor themeColor,
   }) {
-    final baseModel = ref.read(chatProvider).model;
+    final baseModel = ref.read(baseProvider);
     final userName = currentUserId == replyMessageModel.userId
         ? S.current.receiver
         : baseModel.userList[1].displayName.isNotEmpty

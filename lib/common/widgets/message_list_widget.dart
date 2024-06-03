@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ktalk/chat/models/chat_model.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
+import 'package:ktalk/common/providers/base_provider.dart';
 import 'package:ktalk/common/providers/message_provider.dart';
 import 'package:ktalk/common/widgets/message_card_widget.dart';
+import 'package:ktalk/group/providers/group_provider.dart';
 
 class MessageListWidget extends ConsumerStatefulWidget {
   const MessageListWidget({super.key});
@@ -28,36 +31,53 @@ class _MessageListWidgetState extends ConsumerState<MessageListWidget> {
   }
 
   Future<void> _getMessageList() async {
-    await ref.read(chatProvider.notifier).getMessageList();
+    final baseModel = ref.read(baseProvider);
+    baseModel is ChatModel
+        ? await ref.read(chatProvider.notifier).getMessageList()
+        : await ref.read(groupProvider.notifier).getMessageList();
   }
 
   void scrollListener() {
-    final baseState = ref.read(chatProvider);
+    final baseModel = ref.read(baseProvider);
+    final provider = baseModel is ChatModel ? chatProvider : groupProvider;
+    final baseState = ref.read(provider);
 
     if (baseState.hasPrev &&
         scrollController.offset >= scrollController.position.maxScrollExtent) {
-      ref.read(chatProvider.notifier).getMessageList(
-            firstMessageId: baseState.messageList.first.messageId,
-          );
+      baseModel is ChatModel
+          ? ref.read(chatProvider.notifier).getMessageList(
+                firstMessageId: baseState.messageList.first.messageId,
+              )
+          : ref.read(groupProvider.notifier).getMessageList(
+                firstMessageId: baseState.messageList.first.messageId,
+              );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final status = ref.watch(chatProvider);
-    final baseModel = status.model;
-    final messageList = status.messageList;
+    final baseModel = ref.read(baseProvider);
+    final provider = baseModel is ChatModel ? chatProvider : groupProvider;
+    final messageList = ref.watch(provider).messageList;
 
-    ref.listen(chatListProvider, (previous, next) {
+    final streamListProvider =
+        baseModel is ChatModel ? chatListProvider : groupListProvider;
+
+    ref.listen(streamListProvider, (previous, next) {
       final updatedModelList = next.value;
       final updatedModel = updatedModelList?.first;
 
       if (updatedModelList != null && updatedModel!.id == baseModel.id) {
         final lastMessageId =
             messageList.isNotEmpty ? messageList.last.messageId : null;
-        ref.read(chatProvider.notifier).getMessageList(
-              lastMessageId: lastMessageId,
-            );
+
+        baseModel is ChatModel
+            ? ref.read(chatProvider.notifier).getMessageList(
+                  lastMessageId: lastMessageId,
+                )
+            : ref.read(groupProvider.notifier).getMessageList(
+                  lastMessageId: lastMessageId,
+                );
       }
     });
 

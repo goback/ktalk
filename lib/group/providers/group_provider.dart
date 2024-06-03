@@ -4,6 +4,7 @@ import 'package:flutter_contacts/contact.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/models/user_model.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
+import 'package:ktalk/chat/models/message_model.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/providers/loader_provider.dart';
@@ -36,6 +37,33 @@ class GroupNotifier extends Notifier<GroupState> {
     groupRepository = ref.watch(groupRepositoryProvider);
     currentUserModel = ref.watch(authProvider).userModel;
     return GroupState.init();
+  }
+
+  Future<void> getMessageList({
+    String? lastMessageId,
+    String? firstMessageId,
+  }) async {
+    try {
+      final groupModel = state.model as GroupModel;
+      final messageList = await groupRepository.getMessageList(
+        groupId: groupModel.id,
+        lastMessageId: lastMessageId,
+        firstMessageId: firstMessageId,
+      );
+
+      List<MessageModel> newMessageList = [
+        if (lastMessageId != null) ...state.messageList,
+        ...messageList,
+        if (firstMessageId != null) ...state.messageList,
+      ];
+
+      state = state.copyWith(
+        messageList: newMessageList,
+        hasPrev: lastMessageId != null || messageList.length == 20,
+      );
+    } catch (_) {
+      rethrow;
+    }
   }
 
   void enterGroupChatFromGroupList({

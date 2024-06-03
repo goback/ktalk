@@ -29,6 +29,51 @@ class GroupRepository {
     required this.storage,
   });
 
+  Future<List<MessageModel>> getMessageList({
+    required String groupId,
+    String? lastMessageId,
+    String? firstMessageId,
+  }) async {
+    try {
+      Query<Map<String, dynamic>> query = firestore
+          .collection('groups')
+          .doc(groupId)
+          .collection('messages')
+          .orderBy('createdAt')
+          .limitToLast(20);
+
+      if (lastMessageId != null) {
+        final lastDocRef = await firestore
+            .collection('groups')
+            .doc(groupId)
+            .collection('messages')
+            .doc(lastMessageId)
+            .get();
+        query = query.startAfterDocument(lastDocRef);
+      } else if (firstMessageId != null) {
+        final firstDocRef = await firestore
+            .collection('groups')
+            .doc(groupId)
+            .collection('messages')
+            .doc(firstMessageId)
+            .get();
+        query = query.endBeforeDocument(firstDocRef);
+      }
+
+      final snapshot = await query.get();
+      return await Future.wait(snapshot.docs.map((messageDoc) async {
+        final userModel = await firestore
+            .collection('users')
+            .doc(messageDoc.data()['userId'])
+            .get()
+            .then((value) => UserModel.fromMap(value.data()!));
+        return MessageModel.fromMap(messageDoc.data(), userModel);
+      }).toList());
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   Stream<List<GroupModel>> getGroupList({
     required UserModel currentUserModel,
   }) {

@@ -5,6 +5,7 @@ import 'package:ktalk/common/providers/base_provider.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/widgets/message_input_field_widget.dart';
+import 'package:ktalk/common/widgets/message_list_widget.dart';
 import 'package:ktalk/group/models/group_model.dart';
 import 'package:ktalk/group/providers/group_provider.dart';
 
@@ -51,7 +52,7 @@ class GroupScreen extends ConsumerWidget {
           child: const Column(
             children: [
               Expanded(
-                child: Text('message list'),
+                child: MessageListWidget(),
               ),
               MessageInputFieldWidget(),
             ],

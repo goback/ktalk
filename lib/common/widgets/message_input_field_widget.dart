@@ -185,7 +185,7 @@ class _MessageInputFieldWidgetState
     required ThemeColor themeColor,
     required MessageModel messageModel,
   }) {
-    final baseModel = ref.read(chatProvider).model;
+    final baseModel = ref.read(baseProvider);
     final currentUserId = ref.watch(authProvider).userModel.uid;
     final userName = currentUserId == messageModel.userId
         ? S.current.receiver
