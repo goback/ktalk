@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ktalk/common/screens/create_group_screen.dart';
+import 'package:ktalk/group/screens/create_group_screen.dart';
 
 class GroupListScreen extends ConsumerWidget {
   const GroupListScreen({super.key});

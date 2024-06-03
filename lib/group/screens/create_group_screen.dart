@@ -10,6 +10,7 @@ import 'package:ktalk/common/utils/global_navigator.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/friend/providers/friend_provider.dart';
+import 'package:ktalk/group/providers/group_provider.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
 class CreateGroupScreen extends ConsumerStatefulWidget {
@@ -203,7 +204,15 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: isEnabled ? () {} : null,
+        onPressed: isEnabled
+            ? () {
+                ref.read(groupProvider.notifier).createGroup(
+                      groupName: textEditingController.text.trim(),
+                      groupImage: image,
+                      selectedFriendList: selectedFriendList,
+                    );
+              }
+            : null,
         backgroundColor: isEnabled ? null : Colors.grey,
         child: const Icon(Icons.done),
       ),
