@@ -1,33 +1,27 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ktalk/auth/models/user_model.dart';
-import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/providers/base_provider.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/widgets/message_input_field_widget.dart';
-import 'package:ktalk/common/widgets/message_list_widget.dart';
+import 'package:ktalk/group/models/group_model.dart';
+import 'package:ktalk/group/providers/group_provider.dart';
 
-class ChatScreen extends ConsumerStatefulWidget {
-  static const String routeName = '/chat-screen';
+class GroupScreen extends ConsumerWidget {
+  static const String routeName = '/group-screen';
 
-  const ChatScreen({super.key});
+  const GroupScreen({super.key});
 
   @override
-  ConsumerState<ChatScreen> createState() => _ChatScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final groupModel = ref.watch(groupProvider).model as GroupModel;
 
-class _ChatScreenState extends ConsumerState<ChatScreen> {
-  @override
-  Widget build(BuildContext context) {
-    final chatModel = ref.watch(chatProvider).model;
+    if (groupModel.id.isEmpty) {
+      return Container();
+    }
+
     final themeColor = ref.watch(customThemeProvider).themeColor;
-
-    final userModel = chatModel.userList.length > 1
-        ? chatModel.userList[1]
-        : UserModel.init();
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -37,28 +31,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           title: Row(
             children: [
               CircleAvatar(
-                backgroundImage: userModel.photoURL == null
+                backgroundImage: groupModel.groupImageUrl == null
                     ? const ExtendedAssetImageProvider(
                         'assets/images/profile.png') as ImageProvider
-                    : ExtendedNetworkImageProvider(userModel.photoURL!),
+                    : ExtendedNetworkImageProvider(groupModel.groupImageUrl!),
               ),
               const SizedBox(width: 10),
               Text(
-                userModel.displayName.isEmpty
-                    ? S.current.unknown
-                    : userModel.displayName,
+                '${groupModel.groupName}(${groupModel.userList.where((userModel) => userModel.uid.isNotEmpty).length}${S.current.groupScreenText1})',
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
         ),
         body: ProviderScope(
           overrides: [
-            baseProvider.overrideWithValue(chatModel),
+            baseProvider.overrideWithValue(groupModel),
           ],
           child: const Column(
             children: [
               Expanded(
-                child: MessageListWidget(),
+                child: Text('message list'),
               ),
               MessageInputFieldWidget(),
             ],

@@ -11,6 +11,7 @@ import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/friend/providers/friend_provider.dart';
 import 'package:ktalk/group/providers/group_provider.dart';
+import 'package:ktalk/group/screens/group_screen.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
 class CreateGroupScreen extends ConsumerStatefulWidget {
@@ -163,9 +164,11 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
             logger.e(stack);
             context.loaderOverlay.hide();
             GlobalNavigator.showAlertDialog(text: err.toString());
+            return null;
           },
           loading: () {
             context.loaderOverlay.show();
+            return null;
           },
         ),
       ),
@@ -206,11 +209,22 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: isEnabled
             ? () {
-                ref.read(groupProvider.notifier).createGroup(
-                      groupName: textEditingController.text.trim(),
-                      groupImage: image,
-                      selectedFriendList: selectedFriendList,
-                    );
+                try {
+                  ref.read(groupProvider.notifier).createGroup(
+                        groupName: textEditingController.text.trim(),
+                        groupImage: image,
+                        selectedFriendList: selectedFriendList,
+                      );
+
+                  Navigator.pushReplacementNamed(
+                    context,
+                    GroupScreen.routeName,
+                  );
+                } catch (e, stackTrace) {
+                  GlobalNavigator.showAlertDialog(text: e.toString());
+                  logger.e(e);
+                  logger.e(stackTrace);
+                }
               }
             : null,
         backgroundColor: isEnabled ? null : Colors.grey,

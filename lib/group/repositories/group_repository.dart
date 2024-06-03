@@ -5,8 +5,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/models/user_model.dart';
+import 'package:ktalk/chat/models/message_model.dart';
+import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/group/models/group_model.dart';
 import 'package:mime/mime.dart';
+import 'package:uuid/uuid.dart';
 
 final groupRepositoryProvider = Provider<GroupRepository>(
   (ref) {
@@ -25,6 +28,76 @@ class GroupRepository {
     required this.firestore,
     required this.storage,
   });
+
+  Future<void> sendMessage({
+    String? text,
+    File? file,
+    required GroupModel groupModel,
+    required UserModel currentUserModel,
+    required MessageEnum messageType,
+    required MessageModel? replyMessageModel,
+  }) async {
+    try {
+      if (messageType != MessageEnum.text) {
+        text = messageType.toText();
+      }
+
+      groupModel = groupModel.copyWith(
+        createAt: Timestamp.now(),
+        lastMessage: text,
+      );
+
+      final messageDocRef = firestore
+          .collection('groups')
+          .doc(groupModel.id)
+          .collection('messages')
+          .doc();
+
+      if (messageType != MessageEnum.text) {
+        String? mimeType = lookupMimeType(file!.path); // 'image/png'
+        final metadata = SettableMetadata(contentType: mimeType);
+        final filename = '${const Uuid().v1()}.${mimeType!.split('/')[1]}';
+
+        TaskSnapshot snapshot = await storage
+            .ref()
+            .child('group')
+            .child(groupModel.id)
+            .child(filename)
+            .putFile(file, metadata);
+        text = await snapshot.ref.getDownloadURL();
+      }
+
+      final messageModel = MessageModel(
+        userId: currentUserModel.uid,
+        text: text!,
+        type: messageType,
+        createdAt: Timestamp.now(),
+        messageId: messageDocRef.id,
+        userModel: UserModel.init(),
+        replyMessageModel: replyMessageModel,
+      );
+
+      await firestore.runTransaction((transaction) async {
+        transaction.set(
+          messageDocRef,
+          messageModel.toMap(),
+        );
+
+        for (final userModel in groupModel.userList) {
+          transaction.set(
+            firestore
+                .collection('users')
+                .doc(userModel.uid)
+                .collection('groups')
+                .doc(groupModel.id),
+            groupModel.toMap(),
+          );
+        }
+      });
+    } catch (_) {
+      rethrow;
+    }
+  }
 
   Future<GroupModel> createGroup({
     required File? groupImage,

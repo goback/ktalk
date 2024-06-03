@@ -6,16 +6,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
+import 'package:ktalk/chat/models/chat_model.dart';
 import 'package:ktalk/chat/models/message_model.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/models/theme_color.dart';
+import 'package:ktalk/common/providers/base_provider.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/utils/global_navigator.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/common/widgets/custom_image_viewer_widget.dart';
 import 'package:ktalk/common/widgets/video_download_widget.dart';
+import 'package:ktalk/group/providers/group_provider.dart';
 
 class MessageInputFieldWidget extends ConsumerStatefulWidget {
   const MessageInputFieldWidget({super.key});
@@ -53,11 +56,17 @@ class _MessageInputFieldWidgetState
   }
 
   Future<void> _sendTextMessage() async {
+    final baseModel = ref.read(baseProvider);
     try {
-      ref.read(chatProvider.notifier).sendMessage(
-            text: _textEditingController.text,
-            messageType: MessageEnum.text,
-          );
+      baseModel is ChatModel
+          ? ref.read(chatProvider.notifier).sendMessage(
+                text: _textEditingController.text,
+                messageType: MessageEnum.text,
+              )
+          : ref.read(groupProvider.notifier).sendMessage(
+                text: _textEditingController.text,
+                messageType: MessageEnum.text,
+              );
       _textEditingController.clear();
       setState(() {
         isTextInputted = false;
@@ -145,6 +154,7 @@ class _MessageInputFieldWidgetState
   Future<void> _sendMediaMessage({
     required MessageEnum messageType,
   }) async {
+    final baseModel = ref.read(baseProvider);
     XFile? xFile;
     if (messageType == MessageEnum.image) {
       xFile = await ImagePicker().pickImage(
@@ -160,10 +170,15 @@ class _MessageInputFieldWidgetState
 
     if (xFile == null) return;
 
-    ref.read(chatProvider.notifier).sendMessage(
-          messageType: messageType,
-          file: File(xFile.path),
-        );
+    baseModel is ChatModel
+        ? ref.read(chatProvider.notifier).sendMessage(
+              messageType: messageType,
+              file: File(xFile.path),
+            )
+        : ref.read(groupProvider.notifier).sendMessage(
+              messageType: messageType,
+              file: File(xFile.path),
+            );
   }
 
   Widget replyMessagePreviewWidget({
