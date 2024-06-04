@@ -29,6 +29,46 @@ class GroupRepository {
     required this.storage,
   });
 
+  Future<void> exitGroup({
+    required GroupModel groupModel,
+    required String currentUserId,
+  }) async {
+    try {
+      final groupsDocRef = firestore.collection('groups').doc(groupModel.id);
+      final usersChatsDocRef = firestore
+          .collection('users')
+          .doc(currentUserId)
+          .collection('groups')
+          .doc(groupModel.id);
+
+      firestore.runTransaction((transaction) async {
+        transaction.update(groupsDocRef, {
+          'userList': FieldValue.arrayRemove([currentUserId]),
+        });
+
+        for (final userModel in groupModel.userList) {
+          if (userModel.uid == currentUserId || userModel.uid.isEmpty) continue;
+          final userChatDocRef = firestore
+              .collection('users')
+              .doc(userModel.uid)
+              .collection('groups')
+              .doc(groupModel.id);
+          transaction.update(userChatDocRef, {
+            'userList': FieldValue.arrayRemove([currentUserId]),
+          });
+          transaction.update(userChatDocRef, {
+            'userList': FieldValue.arrayUnion(['']),
+            'createAt': Timestamp.now(),
+          });
+        }
+
+        transaction.delete(usersChatsDocRef);
+      });
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   Future<List<MessageModel>> getMessageList({
     required String groupId,
     String? lastMessageId,

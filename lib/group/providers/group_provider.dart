@@ -39,6 +39,19 @@ class GroupNotifier extends Notifier<GroupState> {
     return GroupState.init();
   }
 
+  Future<void> exitGroup({
+    required GroupModel groupModel,
+  }) async {
+    try {
+      await groupRepository.exitGroup(
+        groupModel: groupModel,
+        currentUserId: currentUserModel.uid,
+      );
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   Future<void> getMessageList({
     String? lastMessageId,
     String? firstMessageId,

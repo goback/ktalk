@@ -30,7 +30,13 @@ class GroupListScreen extends ConsumerWidget {
                   extentRatio: 0.25,
                   children: [
                     SlidableAction(
-                      onPressed: (context) {},
+                      onPressed: (context) async {
+                        await ref.read(groupProvider.notifier).exitGroup(
+                              groupModel: groupModel,
+                            );
+
+                        ref.invalidate(groupProvider);
+                      },
                       backgroundColor: Colors.red,
                       icon: Icons.exit_to_app_rounded,
                       label: S.current.exit,
