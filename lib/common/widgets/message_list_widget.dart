@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ktalk/auth/providers/auth_provider.dart';
 import 'package:ktalk/chat/models/chat_model.dart';
 import 'package:ktalk/chat/providers/chat_provider.dart';
+import 'package:ktalk/common/enum/message_enum.dart';
 import 'package:ktalk/common/providers/base_provider.dart';
 import 'package:ktalk/common/providers/message_provider.dart';
+import 'package:ktalk/common/utils/global_navigator.dart';
 import 'package:ktalk/common/widgets/message_card_widget.dart';
 import 'package:ktalk/group/providers/group_provider.dart';
 
@@ -59,6 +62,26 @@ class _MessageListWidgetState extends ConsumerState<MessageListWidget> {
     final baseModel = ref.read(baseProvider);
     final provider = baseModel is ChatModel ? chatProvider : groupProvider;
     final messageList = ref.watch(provider).messageList;
+    final currentUserId = ref.watch(authProvider).userModel.uid;
+
+    ref.listen(
+      provider,
+      (previous, next) {
+        if (scrollController.offset <=
+            scrollController.position.minScrollExtent + 20) return;
+
+        if (previous == null ||
+            next.model.id.isEmpty ||
+            previous.messageList.first != next.messageList.first ||
+            next.messageList.last.userId == currentUserId) return;
+        final newMessage = next.messageList.last;
+        GlobalNavigator.showToast(
+          msg: newMessage.type != MessageEnum.text
+              ? newMessage.type.toText()
+              : newMessage.text,
+        );
+      },
+    );
 
     final streamListProvider =
         baseModel is ChatModel ? chatListProvider : groupListProvider;
