@@ -2,12 +2,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ktalk/auth/providers/auth_provider.dart';
+import 'package:ktalk/chat/models/chat_model.dart';
+import 'package:ktalk/chat/providers/chat_provider.dart';
 import 'package:ktalk/chat/screens/chat_list_screen.dart';
 import 'package:ktalk/common/enum/theme_mode_enum.dart';
+import 'package:ktalk/common/models/base_model.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/providers/locale_provider.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
+import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/friend/screens/friend_list_screen.dart';
+import 'package:ktalk/group/providers/group_provider.dart';
 import 'package:ktalk/group/screens/group_list_screen.dart';
 
 class MainLayoutScreen extends ConsumerStatefulWidget {
@@ -28,10 +33,49 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     await ref.read(authProvider.notifier).getCurrentUserData();
   }
 
+  void _localNotifications({
+    required StreamProvider<List<BaseModel>> streamProvider,
+  }) {
+    ref.listen(
+      streamProvider,
+      (previous, next) {
+        if (next.isLoading || next.value!.isEmpty || previous!.value == null) {
+          return;
+        }
+
+        final provider =
+            next.value!.first is ChatModel ? chatProvider : groupProvider;
+        if (ref.watch(provider).model.id == next.value!.first.id) {
+          return;
+        }
+
+        if (next.value!.length != previous.value!.length) {
+          return;
+        }
+
+        final nextBaseModel = next.value!.first;
+        final prevBaseModel = previous.value!
+            .firstWhere((baseModel) => baseModel.id == nextBaseModel.id);
+        if (nextBaseModel.userList
+                .where((userModel) => userModel.uid.isEmpty)
+                .length !=
+            prevBaseModel.userList
+                .where((userModel) => userModel.uid.isEmpty)
+                .length) {
+          return;
+        }
+        logger.d('new msg!!!');
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider);
     final themeModeEnum = ref.watch(customThemeProvider).themeModeEnum;
+
+    _localNotifications(streamProvider: chatListProvider);
+    _localNotifications(streamProvider: groupListProvider);
 
     return DefaultTabController(
       animationDuration: Duration.zero,
