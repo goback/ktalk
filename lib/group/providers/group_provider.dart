@@ -17,7 +17,7 @@ final groupProvider = NotifierProvider<GroupNotifier, GroupState>(
   GroupNotifier.new,
 );
 
-final groupListProvider = StreamProvider<List<GroupModel>>(
+final groupListProvider = StreamProvider.autoDispose<List<GroupModel>>(
   (ref) {
     final currentUserModel = ref.watch(authProvider).userModel;
     return ref.watch(groupRepositoryProvider).getGroupList(

@@ -12,6 +12,7 @@ import 'package:ktalk/common/providers/loader_provider.dart';
 import 'package:ktalk/common/providers/locale_provider.dart';
 import 'package:ktalk/common/screens/main_layout_screen.dart';
 import 'package:ktalk/common/utils/global_navigator.dart';
+import 'package:ktalk/common/utils/local_notifications.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
 import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/firebase_options.dart';
@@ -23,9 +24,12 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> requestPermission() async {
   final contactPermissionStatus = await Permission.contacts.request();
+  final notificationsPermissionStatus =
+      await LocalNotifications.requestNotificationsPermission() ?? false;
 
   if (contactPermissionStatus.isDenied ||
-      contactPermissionStatus.isPermanentlyDenied) {
+      contactPermissionStatus.isPermanentlyDenied ||
+      !notificationsPermissionStatus) {
     await openAppSettings();
     SystemNavigator.pop();
   }
@@ -36,6 +40,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await LocalNotifications.init();
   await requestPermission();
   runApp(const ProviderScope(
     child: MyApp(),

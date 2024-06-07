@@ -15,7 +15,7 @@ final replyMessageModelProvider = AutoDisposeStateProvider<MessageModel?>(
   (ref) => null,
 );
 
-final chatListProvider = StreamProvider<List<ChatModel>>((ref) {
+final chatListProvider = StreamProvider.autoDispose<List<ChatModel>>((ref) {
   final currentUserModel = ref.watch(authProvider).userModel;
   return ref.watch(chatRepositoryProvider).getChatList(
         currentUserModel: currentUserModel,

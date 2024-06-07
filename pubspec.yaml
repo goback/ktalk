@@ -57,6 +57,7 @@ dependencies:
   uuid: ^4.4.0
   flutter_file_downloader: ^1.2.1
   fluttertoast: ^8.2.6
+  flutter_local_notifications: ^17.1.2
 
 dev_dependencies:
   flutter_test:

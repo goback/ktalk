@@ -9,8 +9,8 @@ import 'package:ktalk/common/enum/theme_mode_enum.dart';
 import 'package:ktalk/common/models/base_model.dart';
 import 'package:ktalk/common/providers/custom_theme_provider.dart';
 import 'package:ktalk/common/providers/locale_provider.dart';
+import 'package:ktalk/common/utils/local_notifications.dart';
 import 'package:ktalk/common/utils/locale/generated/l10n.dart';
-import 'package:ktalk/common/utils/logger.dart';
 import 'package:ktalk/friend/screens/friend_list_screen.dart';
 import 'package:ktalk/group/providers/group_provider.dart';
 import 'package:ktalk/group/screens/group_list_screen.dart';
@@ -34,7 +34,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   }
 
   void _localNotifications({
-    required StreamProvider<List<BaseModel>> streamProvider,
+    required AutoDisposeStreamProvider<List<BaseModel>> streamProvider,
   }) {
     ref.listen(
       streamProvider,
@@ -64,7 +64,17 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                 .length) {
           return;
         }
-        logger.d('new msg!!!');
+        final currentUserId = ref.watch(authProvider).userModel.uid;
+        final userName = next.value!.first.userList
+            .where((userModel) => userModel.uid != currentUserId)
+            .map((userModel) => // ['a', 'b', 'c']
+                userModel.displayName)
+            .join(', '); // 'a, b, c'
+
+        LocalNotifications.showSimpleNotification(
+          title: userName,
+          body: next.value!.first.lastMessage,
+        );
       },
     );
   }
